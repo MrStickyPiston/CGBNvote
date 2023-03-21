@@ -12,7 +12,7 @@
         <form method="post" id="itxx7" action="/vote">
           <fieldset id="ih2z2">
             <legend id="i9w0u">Voer je leerlingnummer in (voor authenticatie):</legend>
-            <input type="text" id="user" name="user" required/>
+            <input type="number" id="user" name="user" required/>
           </fieldset>
           <fieldset id="ispc8">
             <legend id="i0b1u">Voer je authenticatiecode in:</legend>
@@ -22,6 +22,7 @@
                 const button = document.getElementById('Button_sendCode');
                 button.addEventListener('click', () => {
                   if (document.getElementById('user').value == ""){alert('Vul het "leerlingnummer"-veld in.'); return}
+                  if (parseInt(document.getElementById('user').value) == NaN){alert('Het "leerlingnummer"-veld mag alleen nummers bevatten.'); return}
                     fetch('/send_code?userid=' + document.getElementById('user').value, {method: 'POST'})
                         .then(response => response.text())
                         .then(text => alert(text));
@@ -219,4 +220,14 @@
     background-size:auto;
     background-image:linear-gradient(#ffffff 0%, #ffffff 100%);
   }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
 </style>

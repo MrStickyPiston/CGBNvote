@@ -44,7 +44,7 @@ def candidates_html():
 
 @get('/vote')
 def collect_vote():
-    html = "".join(open("web/index.html").readlines()).replace("{select_vote}", candidates_html())
+    html = "".join(open("web/collect_votes.html").readlines()).replace("{select_vote}", candidates_html())
     return html
 
 
@@ -69,11 +69,11 @@ def process_vote():
         if success == "authException":
             error = "De code komt niet overeen met de gebruiker"
         elif success == "alreadyVotedException":
-            error = "Je hebt al gestemd"
+            error = "U kunt helaas geen tweede keer stemmen."
         elif success == "codeExpiredException":
-            error = "De code is verlopen. genereer een nieuwe"
+            error = "De tijd om te stemmen met deze code is verlopen. vraag een nieuwe code aan om te stemmen."
         elif success == "candidateException":
-            error = "Kandidaat niet gevonden"
+            error = "Error: Kandidaat niet gevonden. rapporteer dit aan de administrator."
         else:
             error = success
         return "".join(open("web/vote_error.html").readlines()).replace("{error}", error)
