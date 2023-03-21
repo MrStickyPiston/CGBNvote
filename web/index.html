@@ -11,36 +11,33 @@
       <div id="iy8d-2" class="cards">
         <form method="post" id="itxx7" action="/vote">
           <fieldset id="ih2z2">
-            <legend id="i9w0u">Voer je leerlingnummer in:</legend>
+            <legend id="i9w0u">Voer je leerlingnummer in (voor authenticatie):</legend>
             <input type="text" id="user" name="user" required/>
           </fieldset>
           <fieldset id="ispc8">
             <legend id="i0b1u">Voer je authenticatiecode in:</legend>
             <button type="button" id="Button_sendCode">Stuur code</button>
-              <script>
+            <input type="password" id="imzij" name="code" required/>
+            <script>
                 const button = document.getElementById('Button_sendCode');
                 button.addEventListener('click', () => {
-                  if (document.getElementById('user').value == ""){alert("Error: invalid mail."); return}
+                  if (document.getElementById('user').value == ""){alert('Vul het "leerlingnummer"-veld in.'); return}
                     fetch('/send_code?userid=' + document.getElementById('user').value, {method: 'POST'})
                         .then(response => response.text())
                         .then(text => alert(text));
                 });
-              </script>
-            <input type="password" id="imzij" name="code" required/>
+            </script>
           </fieldset>
           <div id="i2qefk">
           </div>
           <fieldset id="i1gun">
             <legend id="i8e22j">Selecteer waarop je wilt stemmen:</legend>
             <div id="iy8oeq">
-              <select name="vote" id="vote">
-                <option value="zweintje">Zweintje</option>
-                <option value="pvv">Partij Voor de Varkens</option>
-              </select>
+              <button type="submit" id="ifdlg">Verzend stem</button>
+              {select_vote}
             </div>
           </fieldset>
           <div id="ibo35">
-            <button type="submit" id="ifdlg">Verzend stem</button>
           </div>
         </form>
       </div>
@@ -134,9 +131,6 @@
     border:0px solid white;
     border-radius:5px 5px 5px 5px;
   }
-  #i2ako8{
-    color:#ffffff;
-  }
   #iprpw-2{
     margin:0 0 10px 0;
   }
@@ -160,23 +154,20 @@
   #i8e22j{
     color:#ffffff;
   }
-  #i7aggd{
-    color:#ffffff;
-  }
-  #ixfhgr{
-    color:#ffffff;
-  }
   #ifdlg{
     border-radius:5px 5px 5px 5px;
     opacity:1;
     border:0px solid white;
-    padding:2.5px 5px 2.5px 5px;
+    padding:0px 2.5px 0px 2.5px;
     height:30px;
     background-repeat:repeat;
     background-position:left top;
     background-attachment:scroll;
     background-size:auto;
     background-image:linear-gradient(#ffffff 0%, #ffffff 100%);
+    width:150px;
+    margin:0 10px 0 0;
+    display:block;
   }
   #ih2z2{
     margin:0 0 6px 0;
@@ -201,11 +192,31 @@
   }
   #iy8oeq{
     height:30px;
+    display:flex;
   }
   #Button_sendCode:active{
-    box-shadow:0 0 5px 0 black ;
+    box-shadow:0 0 5px 0 black;
   }
   #ifdlg:active{
-    box-shadow:0 0 5px 0 black ;
+    box-shadow:0 0 5px 0 black;
+  }
+  #vote{
+    width:100%;
+    display:block;
+    height:30px;
+    background-repeat:repeat;
+    background-position:left top;
+    background-attachment:scroll;
+    background-size:auto;
+    background-image:linear-gradient(#ffffff 0%, #ffffff 100%);
+    border-radius:5px 5px 5px 5px;
+    border:0 solid white;
+  }
+  #vote:hover{
+    background-repeat:repeat;
+    background-position:left top;
+    background-attachment:scroll;
+    background-size:auto;
+    background-image:linear-gradient(#ffffff 0%, #ffffff 100%);
   }
 </style>

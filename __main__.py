@@ -9,7 +9,6 @@ if __name__ == '__main__':
     lib.database.set_candidates(con, [('Zweintje', 'zweintje'), ('Partij Voor de Varkens', 'pvv')])
 
     print(f"""Candidates: {lib.database.get_candidates(con)}""")
-    print(lib.web.candidates_html())
 
     con.close()
 

@@ -39,8 +39,10 @@ def generate_code(con, userid):
 
     if len(existing) >= 1:
         if existing[0][2] == 1:
-            pass
+            return [code, "alreadyVotedException"]
         else:
+            if existing[0][3] + 300 > time.time():
+                return [code, "codeNotExpiredException"]
             # Generate a new code
             code = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(6))
             code_edited = True
@@ -64,7 +66,7 @@ def generate_code(con, userid):
                     """,
                     (userid, code, time.time()))
     con.commit()
-    return [code, code_edited]
+    return [code, "Null"]
 
 
 def disable_code(con, userid):
@@ -120,21 +122,21 @@ def insert_vote(con, userid, code, vote):
     try:
         credentials = cur.fetchall()[0]
     except IndexError:
-        return "notFoundException"
+        return "credentialsNotFoundException"
 
-    print(candidates)
-
-    if credentials[1] == code and int(credentials[3]) + 300 > time.time() and credentials[2] == 0:
-        if vote in [i[1] for i in candidates]:
-            disable_code(con, userid)
-            cur.execute("""INSERT INTO votes VALUES(?, ?)""", [vote, time.time()])
-        else:
-            return "candidateException"
-    else:
+    if credentials[1] != code:
         return "authException"
-
-    con.commit()
-    return "success"
+    elif credentials[2] != 0:
+        return "alreadyVotedException"
+    elif int(credentials[3]) + 300 < time.time():
+        return "codeExpiredException"
+    elif vote not in [i[1] for i in candidates]:
+        return "candidateException"
+    else:
+        disable_code(con, userid)
+        cur.execute("""INSERT INTO votes VALUES(?, ?)""", [vote, time.time()])
+        con.commit()
+        return "success"
 
 
 if __name__ == "__main__":

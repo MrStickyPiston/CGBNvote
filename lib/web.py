@@ -8,6 +8,8 @@ sslcontext = ssl.create_default_context()
 mailserver = "mr.sticky.piston@gmail.com"
 mailserver_password = "XXXXXX"
 
+page_url = "localhost:8080"
+
 
 def send_mail(code, email):
     message = MIMEMultipart("alternative")
@@ -16,11 +18,8 @@ def send_mail(code, email):
     message["To"] = email
 
     text = f"""\
-Authentication code
-Your authentication code for the CGBN votes at PAGE_URL is {code[0]}.
-
-If you did not request this code, you can ignore this email."""
-    html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0])
+Je authenticatiecode voor CGBNvotes is {code[0]}.\nGebruik deze code om online te stemmen.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}."""
+    html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0]).replace("{PAGE_URL}", page_url)
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(html, "html"))
 
@@ -45,7 +44,7 @@ def candidates_html():
 
 @get('/vote')
 def collect_vote():
-    html = "".join(open("web/index.html").readlines())
+    html = "".join(open("web/index.html").readlines()).replace("{select_vote}", candidates_html())
     return html
 
 
@@ -66,7 +65,18 @@ def process_vote():
                 break
         return "".join(open("web/vote_success.html").readlines()).replace("{vote}", vote_display)
     else:
-        return "".join(open("web/vote_success.html").readlines()).replace("{vote}", success)
+        error = ""
+        if success == "authException":
+            error = "De code komt niet overeen met de gebruiker"
+        elif success == "alreadyVotedException":
+            error = "Je hebt al gestemd"
+        elif success == "codeExpiredException":
+            error = "De code is verlopen. genereer een nieuwe"
+        elif success == "candidateException":
+            error = "Kandidaat niet gevonden"
+        else:
+            error = success
+        return "".join(open("web/vote_error.html").readlines()).replace("{error}", error)
 
 
 @post('/send_code')
@@ -76,11 +86,13 @@ def send_code():
     con = lib.database.connect("database.db")
     code = lib.database.generate_code(con, request.query["userid"])
 
-    if code[1]:
-        send_mail(code, email)
-        return f"succesfully send a code to {email}"
+    if code[1] == "alreadyVotedException":
+        return "Sorry, maar u hebt al gestemd."
+    elif code[1] == "codeNotExpiredException":
+        return "Sorry, maar u hebt al een werkende code ontvangen / is naar u op weg."
     else:
-        return f"Sorry, but you already voted"
+        send_mail(code, email)
+        return f"De authenticatiecode is succesvol verzonden naar {email}."
 
 
 def serve(host, port):
