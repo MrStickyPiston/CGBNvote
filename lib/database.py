@@ -1,5 +1,7 @@
 import sqlite3, secrets, string, time
 
+import lib.encryption
+
 
 def connect(db):
     try:
@@ -22,6 +24,9 @@ def setup(con):
     cur.execute("""CREATE TABLE IF NOT EXISTS candidates(id,
                                                        displayname
                                                        )""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS admins(username,
+                                                    password_hash
+                                                           )""")
     con.commit()
 
 
@@ -95,6 +100,7 @@ def get_codes(con):
     cur = con.cursor()
     cur.execute("SELECT * FROM 'auth'")
     db = cur.fetchall()
+    con.commit()
     return db
 
 
@@ -104,6 +110,7 @@ def set_candidates(con, candidates):
 
     for i in candidates:
         cur.execute("""INSERT INTO candidates VALUES(?, ?)""", [i[0], i[1]])
+    con.commit()
 
 
 def get_candidates(con):
@@ -112,6 +119,27 @@ def get_candidates(con):
     db = cur.fetchall()
     con.commit()
     return db
+
+def set_admins(con, admins):
+    cur = con.cursor()
+    cur.execute("DELETE FROM 'admins'")
+
+    for i in admins:
+        cur.execute("""INSERT INTO admins VALUES(?, ?)""", [i[0], lib.encryption.hash(i[1])])
+    con.commit()
+
+def verify_admins(con, user, password):
+    cur = con.cursor()
+    cur.execute("SELECT * FROM 'admins' WHERE username = ?", [user])
+    credentials = cur.fetchall()[0]
+    con.commit()
+
+    password_hashed = lib.encryption.hash(password)
+    if password_hashed == credentials[1]:
+        return True
+    else:
+        return False
+
 
 
 def insert_vote(con, userid, code, vote):

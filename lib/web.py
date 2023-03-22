@@ -42,11 +42,28 @@ def candidates_html():
     return start + mid + end
 
 
+@get('/vote-admin')
+def vote_admin_login():
+    return "".join(open("web/admin_login.html").readlines()).replace("{script}", "")
+
+@post('/vote-admin')
+def vote_admin_panel():
+    user = request.forms.get('user')
+    password = request.forms.get('password')
+
+    con = lib.database.connect("database.db")
+    succes = lib.database.verify_admins(con, user, password)
+    con.close()
+
+    if succes:
+        return "".join(open("web/admin_panel.html").readlines())
+    else:
+        return "".join(open("web/admin_login.html").readlines()).replace("{script}", 'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+
 @get('/vote')
 def collect_vote():
     html = "".join(open("web/collect_votes.html").readlines()).replace("{select_vote}", candidates_html())
     return html
-
 
 @post('/vote')
 def process_vote():
