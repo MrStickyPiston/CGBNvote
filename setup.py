@@ -1,9 +1,5 @@
 import lib
-
-host = "0.0.0.0"
-port = 8080
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     con = lib.database.connect("database.db")
     lib.database.setup(con)
     lib.database.set_candidates(con, [('Volkspartij voor Vrijheid en Democratie', 'vvd'),
@@ -12,8 +8,7 @@ if __name__ == '__main__':
                                       ('Christen-Democratisch Appèl', 'cda'),
                                       ('Socialistische Partij', 'sp')])
     lib.database.set_admins(con, [("sticky", "HelloWorld")])
+    lib.database.set_settings(con, [("voting_active", True), ("live_results", False)])
     print(f"""Candidates: {lib.database.get_candidates(con)}""")
 
     con.close()
-
-    lib.web.serve(host, port)

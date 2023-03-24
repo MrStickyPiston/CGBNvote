@@ -46,6 +46,7 @@ def candidates_html():
 def vote_admin_login():
     return "".join(open("web/admin_login.html").readlines()).replace("{script}", "")
 
+
 @post('/vote-admin')
 def vote_admin_panel():
     user = request.forms.get('user')
@@ -53,20 +54,60 @@ def vote_admin_panel():
 
     con = lib.database.connect("database.db")
     succes = lib.database.verify_admins(con, user, password)
+
+    candidates = lib.database.get_candidates(con)
+    settings= lib.database.get_settings(con)
     con.close()
 
     if succes:
-        return "".join(open("web/admin_panel.html").readlines())
+        return "".join(open("web/admin_panel.html").readlines()).replace("{candidates}", str(candidates)).replace("{settings}", str(settings)).replace("{username}", user)
     else:
-        return "".join(open("web/admin_login.html").readlines()).replace("{script}", 'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
+                                                                         'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+
+
+@post('/vote-admin/process')
+def process_changes():
+    candidates = eval(request.forms.get('candidate_list'))
+    settings = eval(request.forms.get('setting_list'))
+
+    username = request.forms.get('username')
+    password = request.forms.get('password')
+
+    con = lib.database.connect("database.db")
+
+    succes = lib.database.verify_admins(con, username, password)
+
+    if succes:
+        lib.database.set_candidates(con, candidates)
+        lib.database.set_settings(con, settings)
+        con.commit()
+        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
+                                                                         'alert("De wijzigingen zijn successvol verwerkt.")')
+    else:
+        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
+                                                                         'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+
 
 @get('/vote')
 def collect_vote():
+    con = lib.database.connect("database.db")
+    if not lib.database.get_setting(con, "voting_active"):
+        return "".join(open("web/vote_error.html")).replace("{error}",
+                                                            "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+    con.close()
     html = "".join(open("web/collect_votes.html").readlines()).replace("{select_vote}", candidates_html())
     return html
 
+
 @post('/vote')
 def process_vote():
+    con = lib.database.connect("database.db")
+    if not lib.database.get_setting(con, "voting_active"):
+        return "".join(open("web/vote_error.html")).replace("{error}",
+                                                            "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+    con.close()
+
     userid = request.forms.get('user')
     code = request.forms.get('code')
     vote = request.forms.get('vote')
@@ -98,6 +139,12 @@ def process_vote():
 
 @post('/send_code')
 def send_code():
+    con = lib.database.connect("database.db")
+    if not lib.database.get_setting(con, "voting_active"):
+        return "".join(open("web/vote_error.html")).replace("{error}",
+                                                            "De verkiezingen zijn helaas al afgelopen. Kijk op /vote-results voor de resultaten.")
+    con.close()
+
     email = request.query["userid"] + "@cgbn.nl"
 
     con = lib.database.connect("database.db")

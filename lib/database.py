@@ -2,6 +2,8 @@ import sqlite3, secrets, string, time
 
 import lib.encryption
 
+def to_list(tupl):
+    return list(to_list(i) if isinstance(i, tuple) else i for i in tupl)
 
 def connect(db):
     try:
@@ -27,6 +29,10 @@ def setup(con):
     cur.execute("""CREATE TABLE IF NOT EXISTS admins(username,
                                                     password_hash
                                                            )""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS settings(setting,
+                                                      value
+                                                            )""")
+
     con.commit()
 
 
@@ -118,7 +124,9 @@ def get_candidates(con):
     cur.execute("SELECT * FROM 'candidates'")
     db = cur.fetchall()
     con.commit()
-    return db
+
+    return to_list(db)
+
 
 def set_admins(con, admins):
     cur = con.cursor()
@@ -128,10 +136,14 @@ def set_admins(con, admins):
         cur.execute("""INSERT INTO admins VALUES(?, ?)""", [i[0], lib.encryption.hash(i[1])])
     con.commit()
 
+
 def verify_admins(con, user, password):
     cur = con.cursor()
     cur.execute("SELECT * FROM 'admins' WHERE username = ?", [user])
-    credentials = cur.fetchall()[0]
+    try:
+        credentials = cur.fetchall()[0]
+    except IndexError:
+        return False
     con.commit()
 
     password_hashed = lib.encryption.hash(password)
@@ -139,7 +151,6 @@ def verify_admins(con, user, password):
         return True
     else:
         return False
-
 
 
 def insert_vote(con, userid, code, vote):
@@ -166,6 +177,44 @@ def insert_vote(con, userid, code, vote):
         con.commit()
         return "success"
 
+
+def set_settings(con, settings):
+    cur = con.cursor()
+    cur.execute("DELETE FROM settings")
+
+    for i in settings:
+        cur.execute("INSERT INTO settings VALUES(?, ?)", (i[0], i[1]))
+    con.commit()
+
+
+
+
+
+def set_setting(con, setting, value):
+    cur = con.cursor()
+    cur.execute("""UPDATE settings
+                SET value = ?
+                WHERE setting = ?""", (value, setting))
+    con.commit()
+
+def get_setting(con, setting):
+    cur = con.cursor()
+    cur.execute("SELECT * FROM settings WHERE setting =?", (setting,))
+    setting = cur.fetchall()
+    con.commit()
+
+    try:
+        return setting[0][1]
+    except IndexError:
+        return "settingNotFoundException"
+
+def get_settings(con):
+    cur = con.cursor()
+    cur.execute("SELECT * FROM settings")
+    con.commit()
+
+    settings = cur.fetchall()
+    return to_list(settings)
 
 if __name__ == "__main__":
     con = connect("dev_database.db")
