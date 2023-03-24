@@ -1,5 +1,5 @@
-from bottle import get, post, request, run
-import smtplib, ssl
+from bottle import route, get, post, request, run, static_file
+import smtplib, ssl, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import lib
@@ -9,6 +9,18 @@ mailserver = "mr.sticky.piston@gmail.com"
 mailserver_password = "XXXXXX"
 
 page_url = "localhost:8080"
+
+
+@route('/static/<filename>')
+def server_static(filename):
+    con = lib.database.connect("database.db")
+    con.commit()
+
+    if filename == "results.webp" and lib.database.get_setting(con,
+                                                               "voting_active") == "1" and lib.database.get_setting(con,
+                                                                                                                    "live_results") == "0":
+        return "Sorry, maar je mag dit bestand nog niet bekijken."
+    return static_file(filename, root=os.getcwd() + "/static/")
 
 
 def send_mail(code, email):
@@ -56,11 +68,12 @@ def vote_admin_panel():
     succes = lib.database.verify_admins(con, user, password)
 
     candidates = lib.database.get_candidates(con)
-    settings= lib.database.get_settings(con)
+    settings = lib.database.get_settings(con)
     con.close()
 
     if succes:
-        return "".join(open("web/admin_panel.html").readlines()).replace("{candidates}", str(candidates)).replace("{settings}", str(settings)).replace("{username}", user)
+        return "".join(open("web/admin_panel.html").readlines()).replace("{candidates}", str(candidates)).replace(
+            "{settings}", str(settings)).replace("{username}", user)
     else:
         return "".join(open("web/admin_login.html").readlines()).replace("{script}",
                                                                          'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
@@ -92,7 +105,7 @@ def process_changes():
 @get('/vote')
 def collect_vote():
     con = lib.database.connect("database.db")
-    if not lib.database.get_setting(con, "voting_active"):
+    if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
                                                             "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
     con.close()
@@ -103,7 +116,7 @@ def collect_vote():
 @post('/vote')
 def process_vote():
     con = lib.database.connect("database.db")
-    if not lib.database.get_setting(con, "voting_active"):
+    if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
                                                             "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
     con.close()
@@ -140,7 +153,7 @@ def process_vote():
 @post('/send_code')
 def send_code():
     con = lib.database.connect("database.db")
-    if not lib.database.get_setting(con, "voting_active"):
+    if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
                                                             "De verkiezingen zijn helaas al afgelopen. Kijk op /vote-results voor de resultaten.")
     con.close()
@@ -157,6 +170,19 @@ def send_code():
     else:
         send_mail(code, email)
         return f"De authenticatiecode is succesvol verzonden naar {email}."
+
+
+@get('/vote-results')
+def vote_results():
+    con = lib.database.connect("database.db")
+
+    lib.plot.plot_votes(con)
+    results = "<img src=/static/results.webp></img>"
+    if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
+        results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
+
+    con.commit()
+    return "".join(open("web/results.html").readlines()).replace("{results}", results)
 
 
 def serve(host, port):
