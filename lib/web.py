@@ -35,7 +35,7 @@ def send_mail(code, email):
     message["To"] = email
 
     text = f"""\
-Je authenticatiecode voor CGBNvotes is {code[0]}.\nGebruik deze code om online te stemmen.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}."""
+Je authenticatiecode voor CGBNvotes is {code[0]}.\nGebruik deze code om online te stemmen.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
     html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0]).replace("{PAGE_URL}", page_url)
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(html, "html"))
@@ -112,7 +112,7 @@ def collect_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+                                                            "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
     con.close()
     html = "".join(open("web/collect_votes.html").readlines()).replace("{select_vote}", candidates_html())
     return html
@@ -123,7 +123,7 @@ def process_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn helaas al afgelopen. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+                                                            "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
     con.close()
 
     userid = request.forms.get('user')
@@ -160,7 +160,7 @@ def send_code():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn helaas al afgelopen. Kijk op /vote-results voor de resultaten.")
+                                                            "De verkiezingen zijn nu helaas niet actief. Kijk op /vote-results voor de resultaten.")
     con.close()
 
     email = request.query["userid"] + "@cgbn.nl"

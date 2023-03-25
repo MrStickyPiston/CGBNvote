@@ -1,6 +1,5 @@
 import subprocess
 import json
-import lib
 import sys
 
 if __name__ == "__main__":
@@ -24,6 +23,7 @@ if __name__ == "__main__":
 
     # Database
     print("~~~~~ DATABASE ~~~~~")
+    import lib
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
                                       ('Christen-Democratisch Appèl', 'cda'),
                                       ('Socialistische Partij', 'sp')])
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
-    lib.database.set_settings(con, [("voting_active", False), ("live_results", False)])
+    lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0")])
     print("Voting is disabled now, but you can enable it on the admin panel. You can also edit the candidates there.")
 
     print("\nInstallation done. Check README.txt for further information.")
