@@ -21,7 +21,7 @@ def plot_votes(con):
 
     con.commit()
 
-    plt.bar(votes, counts)
+    plt.bar(votes, counts, color="#1e78b6")
     plt.ylabel('Aantal stemmen')
     plt.title('CGBNvote resultaten')
 
