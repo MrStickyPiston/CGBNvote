@@ -1,12 +1,17 @@
-from bottle import route, get, post, request, run, static_file
-import smtplib, ssl, os
+from bottle import route, get, post, request, run, static_file, ServerAdapter
+import smtplib, ssl, os, json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import lib
 
 sslcontext = ssl.create_default_context()
-mailserver = "mr.sticky.piston@gmail.com"
-mailserver_password = "XXXXXX"
+try:
+    with open("config.json", 'r') as file:
+        data = json.load(file)
+        mailserver = data["mail"]
+        mailserver_password = data["mail_password"]
+except Exception:
+    exit("Incorrect config file")
 
 page_url = "localhost:8080"
 
@@ -187,6 +192,18 @@ def vote_results():
 
 def serve(host, port):
     run(host=host, port=port)
+
+def serve_https(host, port, ssl_key, ssl_cert):
+    sslcontext.load_default_certs()
+    run(
+        host=host,
+        port=port,
+        server='gunicorn',
+        reloader=1,
+        debug=1,
+        keyfile=ssl_key,
+        certfile=ssl_cert
+    )
 
 
 if __name__ == "__main__":
