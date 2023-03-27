@@ -10,11 +10,9 @@ try:
         data = json.load(file)
         mailserver = data["mail"]
         mailserver_password = data["mail_password"]
+        page_url = data["url"]
 except Exception:
     exit("Incorrect config file")
-
-page_url = "localhost:8080"
-
 
 @route('/static/<filename>')
 def server_static(filename):
