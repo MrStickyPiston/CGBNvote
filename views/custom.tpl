@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>CGBNvote</title>
 <body id="irbz">
   <header class="header-banner" id="ib6l">
     <div class="container-width">
@@ -8,9 +9,9 @@
   </header>
   <section class="flex-sect" id="ih3qc">
     <div class="container-width">
-      <div class="flex-title" id="iwjse">CGBNvote resultaten
+      <div class="flex-title" id="iwjse">CGBNvote
       </div>
-      <div class="flex-desc" id="ijdug">{results}
+      <div class="flex-desc" id="ijdug">{{!content}}
       </div>
     </div>
   </section>

@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>CGBNvote</title>
 <body id="iz7c">
   <header id="i7wq-2" class="header-banner">
   </header>
@@ -22,8 +23,7 @@
             <script>
                 const button = document.getElementById('Button_sendCode');
                 button.addEventListener('click', () => {
-                  if (document.getElementById('user').value == ""){alert('Vul het "leerlingnummer"-veld in.'); return}
-                  if (parseInt(document.getElementById('user').value) == NaN){alert('Het "leerlingnummer"-veld mag alleen nummers bevatten.'); return}
+                  if (document.getElementById('user').value == ""){alert('Incorrect leerlingnummer.'); return}
                     fetch('/send_code?userid=' + document.getElementById('user').value, {method: 'POST'})
                         .then(response => response.text())
                         .then(text => alert(text));
@@ -36,7 +36,7 @@
             <legend id="i8e22j">Selecteer waarop je wilt stemmen:</legend>
             <div id="iy8oeq">
               <button type="submit" id="ifdlg">Verzend stem</button>
-              {select_vote}
+              {{!select_vote}}
             </div>
           </fieldset>
           <div id="ibo35">

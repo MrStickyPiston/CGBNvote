@@ -1,6 +1,7 @@
 import warnings
 
-from bottle import route, get, post, request, run, static_file, ServerAdapter
+from bottle import route, get, post, request, run, static_file, template
+
 import smtplib, ssl, os, json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -46,9 +47,9 @@ def send_mail(code, email):
 
     text = f"""\
 Je authenticatiecode voor CGBNvotes is {code[0]}.\nDeze code vervalt over {duration} minuten.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
-    html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0]).replace("{PAGE_URL}", page_url).replace("{code_duration}", duration)
+    styledMail = template("mail", {"code": code[0], "PAGE_URL": page_url, "code_duration": duration})
     message.attach(MIMEText(text, "plain"))
-    message.attach(MIMEText(html, "html"))
+    message.attach(MIMEText(styledMail, "html"))
 
     server.sendmail(mailserver, email, message.as_string())
 
@@ -69,7 +70,7 @@ def candidates_html():
 
 @get('/vote-admin')
 def vote_admin_login():
-    return "".join(open("web/admin_login.html").readlines()).replace("{script}", "")
+    return template("admin_login", {"script": ""})
 
 
 @post('/vote-admin')
@@ -85,11 +86,14 @@ def vote_admin_panel():
     con.close()
 
     if succes:
-        return "".join(open("web/admin_panel.html").readlines()).replace("{candidates}", str(candidates)).replace(
-            "{settings}", str(settings)).replace("{username}", user)
+        payload = {
+            "candidates": str(candidates),
+            "settings": str(settings),
+            "username": user,
+        }
+        return template("admin_panel", payload)
     else:
-        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
-                                                                         'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+        return template("script", {"script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
 @post('/vote-admin/process')
@@ -108,30 +112,27 @@ def process_changes():
         lib.database.set_candidates(con, candidates)
         lib.database.set_settings(con, settings)
         con.commit()
-        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
-                                                                         'alert("De wijzigingen zijn successvol verwerkt.")')
+        return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
     else:
-        return "".join(open("web/admin_login.html").readlines()).replace("{script}",
-                                                                         'alert("Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.")')
+        return template("script", {"script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
 @get('/vote')
 def collect_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
-        return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+        con.close()
+        return template("custom", {"content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
     con.close()
-    html = "".join(open("web/collect_votes.html").readlines()).replace("{select_vote}", candidates_html())
-    return html
+    return template("collect_votes", {"select_vote": candidates_html()})
 
 
 @post('/vote')
 def process_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
-        return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten.")
+        con.close()
+        return template("custom", {"content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
     con.close()
 
     userid = request.forms.get('user')
@@ -147,9 +148,8 @@ def process_vote():
             if i[1] == vote:
                 vote_display = i[0]
                 break
-        return "".join(open("web/vote_success.html").readlines()).replace("{vote}", vote_display)
+        return template("custom", {"content": f"Bedankt voor het stemmen op {vote_display}. Je stem zal anoniem worden verwerkt."})
     else:
-        error = ""
         if success == "authException":
             error = "De code komt niet overeen met de gebruiker"
         elif success == "alreadyVotedException":
@@ -160,15 +160,15 @@ def process_vote():
             error = "Error: Kandidaat niet gevonden. rapporteer dit aan de administrator."
         else:
             error = success
-        return "".join(open("web/vote_error.html").readlines()).replace("{error}", error)
+        return template("custom", {"content": error})
 
 
 @post('/send_code')
 def send_code():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
-        return "".join(open("web/vote_error.html")).replace("{error}",
-                                                            "De verkiezingen zijn nu helaas niet actief. Kijk op /vote-results voor de resultaten.")
+        con.close()
+        return f"De verkiezingen zijn nu helaas niet actief. Kijk op {page_url}/vote_results voor de resultaten."
     con.close()
 
     email = request.query["userid"] + "@cgbn.nl"
@@ -195,7 +195,7 @@ def vote_results():
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
 
     con.commit()
-    return "".join(open("web/results.html").readlines()).replace("{results}", results)
+    return template("custom", {"content": results})
 
 
 def serve(host, port):

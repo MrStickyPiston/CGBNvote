@@ -1,3 +1,5 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>CGBNvote admin panel</title>
 <body id="iz7c">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
   <header id="i7wq-2" class="header-banner">
@@ -25,7 +27,7 @@
             <div id="iy8oeq">
               <button type="button" id="button" onclick="save()">Opslaan</button>
               <div id=buffer></div>
-              <input type="hidden" name="username" value={username}>
+              <input type="hidden" name="username" value={{username}}>
               <input type="password" name="password" required id="password" placeholder="wachtwoord"/>
             </div>
           </fieldset>
@@ -257,7 +259,7 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 </style>
-<script>
+<script type="text/javascript">
   function update_editor(candidates){
 
   headerHTML = `<input type="hidden" name="candidate_list" value='${JSON.stringify(candidates)}'>`;
@@ -274,9 +276,6 @@ input:checked + .slider:before {
 
         <div id=buttons>
             <button id=button type=button onclick=delete_candidate(${i})>Verwijder</button>
-            <!--
-            <div id=buffer></div>
-            <button id=button type=button onclick=add_candidate()>Nieuwe toevoegen</button> -->
         </div>
     </div>`;
   }
@@ -344,6 +343,6 @@ function save(){
     document.getElementById("itxx7").submit();
    }
 }
-update_editor({candidates});
-update_settings({settings});
+update_editor({{!candidates}});
+update_settings({{!settings}});
 </script>

@@ -1,4 +1,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<title>CGBNvote admin panel</title>
 <body id="iz7c">
   <header id="i7wq-2" class="header-banner">
   </header>
@@ -153,4 +154,4 @@
     -moz-appearance:textfield;
   }
 </style>
-<script>{script}</script>
+<script>{{!script}}</script>
