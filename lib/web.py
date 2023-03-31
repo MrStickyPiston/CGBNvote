@@ -41,9 +41,12 @@ def send_mail(code, email):
     message["From"] = mailserver
     message["To"] = email
 
+    con = lib.database.connect("database.db")
+    duration = lib.database.get_setting(con, "code_duration")
+
     text = f"""\
-Je authenticatiecode voor CGBNvotes is {code[0]}.\nGebruik deze code om online te stemmen.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
-    html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0]).replace("{PAGE_URL}", page_url)
+Je authenticatiecode voor CGBNvotes is {code[0]}.\nDeze code vervalt over {duration} minuten.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
+    html = "".join(open("web/mail.html").readlines()).replace("{code}", code[0]).replace("{PAGE_URL}", page_url).replace("{code_duration}", duration)
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(html, "html"))
 
@@ -187,7 +190,7 @@ def vote_results():
     con = lib.database.connect("database.db")
 
     lib.plot.plot_votes(con)
-    results = "<img src=/static/results.webp></img>"
+    results = '<img src=/static/results.webp style="max-width:100%"></img>'
     if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
 
