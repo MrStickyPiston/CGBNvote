@@ -17,7 +17,7 @@ if __name__ == "__main__":
         "admin_port": "80",
         "url": input("Enter the server url: "),
         "mail": input("Enter server mail adress: "),
-        "mail_password": input("Enter mail password: ")
+        "mail_password": input("Enter mail (app)password: ")
     }
     json_config = json.dumps(defaultconfig, indent=4)
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                                       ('Christen-Democratisch Appèl', 'cda'),
                                       ('Socialistische Partij', 'sp')])
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
-    lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0")])
+    lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
     print("DONE: setting up database")
     print("NOTE: Voting is disabled now, but you can enable it on the admin panel. You can also edit the candidates there.")
 

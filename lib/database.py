@@ -1,9 +1,11 @@
-import sqlite3, secrets, string, time
+import sqlite3, secrets, string, time, json
 
-import lib.encryption
+import lib
+
 
 def to_list(tupl):
     return list(to_list(i) if isinstance(i, tuple) else i for i in tupl)
+
 
 def connect(db):
     try:
@@ -52,7 +54,7 @@ def generate_code(con, userid):
         if existing[0][2] == 1:
             return [code, "alreadyVotedException"]
         else:
-            if existing[0][3] + 300 > time.time():
+            if existing[0][3] + 60 * codeExpiration > time.time():
                 return [code, "codeNotExpiredException"]
             # Generate a new code
             code = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(6))
@@ -108,6 +110,12 @@ def get_codes(con):
     db = cur.fetchall()
     con.commit()
     return db
+
+
+def delete_codes(con):
+    cur = con.cursor()
+    cur.execute("DELETE FROM 'auth'")
+    con.commit()
 
 
 def set_candidates(con, candidates):
@@ -167,7 +175,7 @@ def insert_vote(con, userid, code, vote):
         return "authException"
     elif credentials[2] != 0:
         return "alreadyVotedException"
-    elif int(credentials[3]) + 300 < time.time():
+    elif int(credentials[3]) + 60 * codeExpiration < time.time():
         return "codeExpiredException"
     elif vote not in [i[1] for i in candidates]:
         return "candidateException"
@@ -176,6 +184,12 @@ def insert_vote(con, userid, code, vote):
         cur.execute("""INSERT INTO votes VALUES(?, ?)""", [vote, time.time()])
         con.commit()
         return "success"
+
+
+def delete_votes(con):
+    cur = con.cursor()
+    cur.execute("DELETE FROM 'votes'")
+    con.commit()
 
 
 def set_settings(con, settings):
@@ -187,15 +201,13 @@ def set_settings(con, settings):
     con.commit()
 
 
-
-
-
 def set_setting(con, setting, value):
     cur = con.cursor()
     cur.execute("""UPDATE settings
                 SET value = ?
                 WHERE setting = ?""", (value, setting))
     con.commit()
+
 
 def get_setting(con, setting):
     cur = con.cursor()
@@ -208,6 +220,7 @@ def get_setting(con, setting):
     except IndexError:
         return "settingNotFoundException"
 
+
 def get_settings(con):
     cur = con.cursor()
     cur.execute("SELECT * FROM settings")
@@ -215,6 +228,13 @@ def get_settings(con):
 
     settings = cur.fetchall()
     return to_list(settings)
+
+try:
+    con = connect("database.db")
+    codeExpiration = int(get_setting(con, "code_duration"))
+    con.commit()
+except sqlite3.OperationalError:
+    pass
 
 if __name__ == "__main__":
     con = connect("dev_database.db")

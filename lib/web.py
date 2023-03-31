@@ -1,3 +1,5 @@
+import warnings
+
 from bottle import route, get, post, request, run, static_file, ServerAdapter
 import smtplib, ssl, os, json
 from email.mime.text import MIMEText
@@ -10,9 +12,16 @@ try:
         data = json.load(file)
         mailserver = data["mail"]
         mailserver_password = data["mail_password"]
+
+        try:
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=sslcontext)
+            server.login(mailserver, mailserver_password)
+        except Exception:
+            print("ERROR: incorrect mail credentials")
         page_url = data["url"]
 except Exception:
     exit("Incorrect config file")
+
 
 @route('/static/<filename>')
 def server_static(filename):
@@ -38,9 +47,7 @@ Je authenticatiecode voor CGBNvotes is {code[0]}.\nGebruik deze code om online t
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(html, "html"))
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=sslcontext) as server:
-        server.login(mailserver, mailserver_password)
-        server.sendmail(mailserver, email, message.as_string())
+    server.sendmail(mailserver, email, message.as_string())
 
 
 def candidates_html():
@@ -190,6 +197,7 @@ def vote_results():
 
 def serve(host, port):
     run(host=host, port=port)
+
 
 def serve_https(host, port, ssl_key, ssl_cert):
     sslcontext.load_default_certs()
