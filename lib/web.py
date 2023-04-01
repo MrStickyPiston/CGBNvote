@@ -1,6 +1,7 @@
 import warnings
 
-from bottle import route, get, post, request, run, static_file, template
+import bottle
+from bottle import route, get, post, request, run, static_file, template, error
 
 import smtplib, ssl, os, json
 from email.mime.text import MIMEText
@@ -24,8 +25,18 @@ except Exception:
     exit("Incorrect config file")
 
 
+@error(404)
+def error404(e):
+    return template("custom", {"content": "404 page not found"})
+
+
+@error(500)
+def error500(e):
+    return template("custom", {"content": "500 internal server error. Neem contact op met de administrator."})
+
+
 @route('/static/<filename>')
-def server_static(filename):
+def static(filename):
     con = lib.database.connect("database.db")
     con.commit()
 
@@ -34,6 +45,11 @@ def server_static(filename):
                                                                                                                     "live_results") == "0":
         return "Sorry, maar je mag dit bestand nog niet bekijken."
     return static_file(filename, root=os.getcwd() + "/static/")
+
+
+@route('/favicon.ico')
+def icon():
+    return static_file("favicon.png", root=os.getcwd() + "/static")
 
 
 def send_mail(code, email):
@@ -93,7 +109,8 @@ def vote_admin_panel():
         }
         return template("admin_panel", payload)
     else:
-        return template("script", {"script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
+        return template("script", {
+            "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
 @post('/vote-admin/process')
@@ -114,7 +131,8 @@ def process_changes():
         con.commit()
         return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
     else:
-        return template("script", {"script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
+        return template("script", {
+            "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
 @get('/vote')
@@ -122,7 +140,8 @@ def collect_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()
-        return template("custom", {"content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
+        return template("custom", {
+            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
     con.close()
     return template("collect_votes", {"select_vote": candidates_html()})
 
@@ -132,7 +151,8 @@ def process_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()
-        return template("custom", {"content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
+        return template("custom", {
+            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
     con.close()
 
     userid = request.forms.get('user')
@@ -148,7 +168,8 @@ def process_vote():
             if i[1] == vote:
                 vote_display = i[0]
                 break
-        return template("custom", {"content": f"Bedankt voor het stemmen op {vote_display}. Je stem zal anoniem worden verwerkt."})
+        return template("custom", {
+            "content": f"Bedankt voor het stemmen op {vote_display}. Je stem zal anoniem worden verwerkt."})
     else:
         if success == "authException":
             error = "De code komt niet overeen met de gebruiker"
