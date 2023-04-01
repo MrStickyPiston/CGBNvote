@@ -1,6 +1,3 @@
-import warnings
-
-import bottle
 from bottle import route, get, post, request, run, static_file, template, error
 
 import smtplib, ssl, os, json
