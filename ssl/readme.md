@@ -12,23 +12,15 @@ openssl req -new -key server.key -out server.csr
 openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
 ```  
   
-Then change the config.json file from  
+Then change the config.json file:
 
-```json
+```diff
 {
   ...
-  "ssl_key": "None",
-  "ssl_cert": "None",
-  ...
-}
-```
-
-to 
-```json
-{
-  ...
-  "ssl_key": "./ssl/server.key",
-  "ssl_cert": "./ssl/server.crt",
+-  "ssl_key": "None",
+-  "ssl_cert": "None",
++  "ssl_key": "./ssl/server.key",
++  "ssl_cert": "./ssl/server.crt",
   ...
 }
 ```
