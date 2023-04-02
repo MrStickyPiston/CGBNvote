@@ -3,38 +3,36 @@ import json
 import sys
 import os
 
-if __name__ == "__main__":
-    # Packages
-    print("~~~~~ PACKAGES ~~~~~")
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
-    print("DONE: installing packages")
 
-    # Config
-    print("~~~~~ CONFIG ~~~~~")
-    defaultconfig = {
+def install_packages():
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
+
+
+def generate_config():
+
+    default_config = {
         "ip": "0.0.0.0",
         "port": "8080",
         "admin_port": "80",
+
+        "ssl_port": "8443",
+        "ssl_admin_port": "443",
+        "ssl_key": "None",
+        "ssl_cert": "None",
+
         "url": input("Enter the server url: "),
         "mail": input("Enter server mail adress: "),
         "mail_password": input("Enter mail (app)password: ")
     }
-    json_config = json.dumps(defaultconfig, indent=4)
+    json_config = json.dumps(default_config, indent=4)
 
     with open("config.json", "w") as outfile:
         outfile.write(json_config)
 
-    print("DONE: generating config.json")
 
-    try:
-        os.mkdir(os.getcwd() + "/static/")
-        print("DONE: creating folder /static/")
-    except FileExistsError:
-        print("ERROR: folder /static/ already exists")
-
-    # Database
-    print("~~~~~ DATABASE ~~~~~")
+def generate_database():
     import lib
+
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
@@ -45,9 +43,39 @@ if __name__ == "__main__":
                                       ('Socialistische Partij', 'sp')])
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
     lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
-    print("DONE: setting up database")
     print("NOTE: Voting is disabled now, but you can enable it on the admin panel. You can also edit the candidates there.")
-
-    print("\nInstallation done. Check README.txt for further information.")
-
     con.close()
+
+
+if __name__ == "__main__":
+    print("~~~~~ PYTHON PACKAGES ~~~~~")
+    install_packages()
+
+    print("~~~~~ CONFIG ~~~~~")
+    if not os.path.exists(os.getcwd() + "/config.json"):
+        generate_config()
+    elif not input("An existing config was found. Do you want to overwrite it? (y/n): ") == "y":
+        print("Skipping config")
+        pass
+    else:
+        os.remove(os.getcwd() + "/config.json")
+        generate_config()
+
+    print("~~~~~ DATABASE ~~~~~")
+    if not os.path.exists(os.getcwd() + "/database.db"):
+        generate_database()
+    elif not input("An existing database was found. Do you want to overwrite it? (y/n): ") == "y":
+        print("Skipping database")
+        pass
+    else:
+        os.remove(os.getcwd() + "/database.db")
+        generate_database()
+
+    print("~~~~~ STATIC FOLDER ~~~~~")
+    try:
+        os.mkdir(os.getcwd() + "/static/")
+        print("DONE: creating folder /static/")
+    except FileExistsError:
+        print("ERROR: folder /static/ already exists")
+
+    print("\nInstallation done. Check readme.md for further information.")

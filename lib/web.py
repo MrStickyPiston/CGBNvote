@@ -227,7 +227,7 @@ def serve_https(host, port, ssl_key, ssl_cert):
         port=port,
         server='gunicorn',
         reloader=1,
-        debug=1,
+        debug=False,
         keyfile=ssl_key,
         certfile=ssl_cert
     )

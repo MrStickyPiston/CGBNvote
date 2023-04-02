@@ -1,3 +1,5 @@
 /database.db
 /config.json
 /static/results.webp
+/ssl/
+!/ssl/readme.md
