@@ -11,13 +11,18 @@
       </div>
       <div id="iy8d-2" class="cards">
         <form method="post" id="itxx7" action="/vote-admin/process" enctype="multipart/form-data">
-          <fieldset id="fieldset">
-            <legend id="i9w0u">Kandidatenlijst</legend>
+          <fieldset class="fieldset">
+            <legend class="text">Kandidatenlijst</legend>
             <div id=candidates></div>
-            <button id=button type=button onclick=add_candidate()>Nieuwe toevoegen</button>
+            <button class="button" type=button onclick=add_candidate()>Nieuwe toevoegen</button>
           </fieldset>
-          <fieldset id="ispc8">
-            <legend id="i0b1u">Andere instellingen</legend>
+          <fieldset class="fieldset" id="dbsettings">
+            <legend class="text">Database beheer</legend>
+            <button class="button" type=button onclick=reset_auth()>Reset authenticatiecodes</button>
+            <button class="button" type=button onclick=reset_votes()>Reset stemmen</button>
+          </fieldset>
+          <fieldset class="fieldset">
+            <legend class="text">Andere instellingen</legend>
             <div id="settings"></div>
           </fieldset>
           <div id="i2qefk">
@@ -25,7 +30,7 @@
           <fieldset id="i1gun">
             <legend id="text">Wijzigingen opslaan</legend>
             <div id="iy8oeq">
-              <button type="button" id="button" onclick="save()">Opslaan</button>
+              <button type="button" class="button" onclick="save()">Opslaan</button>
               <div id=buffer></div>
               <input type="hidden" name="username" value={{username}}>
               <input type="password" name="password" required id="password" placeholder="wachtwoord"/>
@@ -107,19 +112,13 @@
     background-size:contain, cover;
     background-image:url("https://grapesjs.com/img/bg-gr-v.png"), url('https://www.gemeente.nu/content/uploads/sites/5/2017/02/stemmen.jpg');
   }
-  #ispc8{
-    margin:0 0 6px 0;
-  }
-  #i9w0u{
-    color:#ffffff;
-  }
-  #i0b1u{
+  .text{
     color:#ffffff;
   }
   #text{
     color:#ffffff;
   }
-  #button{
+  .button{
     border-radius:5px 5px 5px 5px;
     opacity:1;
     border:0px solid white;
@@ -147,7 +146,7 @@
     width:100%;
     display:block;
   }
-  #fieldset{
+  .fieldset{
     margin:0 0 6px 0;
   }
   #i1gun{
@@ -206,57 +205,9 @@
   height: 34px;
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
+#dbsettings .button{
+  margin: 0 0 6 0
 }
 </style>
 <script type="text/javascript">
@@ -275,7 +226,7 @@ input:checked + .slider:before {
 
 
         <div id=buttons>
-            <button id=button type=button onclick=delete_candidate(${i})>Verwijder</button>
+            <button class="button" type=button onclick=delete_candidate(${i})>Verwijder</button>
         </div>
     </div>`;
   }
@@ -345,4 +296,16 @@ function save(){
 }
 update_editor({{!candidates}});
 update_settings({{!settings}});
+</script>
+<script>
+function reset_auth(){
+    fetch('/vote-admin/reset_auth?user={{username}}&password={{password}}', {method: 'POST'})
+      .then(response => response.text())
+      .then(text => alert(text));
+};
+function reset_votes(){
+    fetch('/vote-admin/reset_votes?user={{username}}&password={{password}}', {method: 'POST'})
+      .then(response => response.text())
+      .then(text => alert(text));
+};
 </script>

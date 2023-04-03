@@ -103,6 +103,7 @@ def vote_admin_panel():
             "candidates": str(candidates),
             "settings": str(settings),
             "username": user,
+            "password": password
         }
         return template("admin_panel", payload)
     else:
@@ -130,6 +131,41 @@ def process_changes():
     else:
         return template("script", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
+
+
+@post('/vote-admin/reset_auth')
+def reset_auth():
+    user = request.query["user"]
+    password = request.query["password"]
+
+    con = lib.database.connect("database.db")
+    succes = lib.database.verify_admins(con, user, password)
+
+    if succes:
+        lib.database.delete_codes(con)
+        con.commit()
+        return 'De wijzigingen zijn successvol verwerkt.'
+    else:
+        con.commit()
+        return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
+
+
+@post('/vote-admin/reset_votes')
+def reset_auth():
+    #TODO: reload the server to show the results
+    user = request.query["user"]
+    password = request.query["password"]
+
+    con = lib.database.connect("database.db")
+    succes = lib.database.verify_admins(con, user, password)
+
+    if succes:
+        lib.database.delete_votes(con)
+        con.commit()
+        return 'De wijzigingen zijn successvol verwerkt.'
+    else:
+        con.commit()
+        return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
 
 
 @get('/vote')
@@ -216,6 +252,7 @@ def vote_results():
     return template("custom", {"content": results})
 
 
+# SERVER FUNCTIONS
 def serve(host, port):
     run(host=host, port=port)
 
