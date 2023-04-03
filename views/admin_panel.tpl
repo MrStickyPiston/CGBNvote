@@ -18,8 +18,8 @@
           </fieldset>
           <fieldset class="fieldset" id="dbsettings">
             <legend class="text">Database beheer</legend>
-            <button class="button" type=button onclick=reset_auth()>Reset authenticatiecodes</button>
-            <button class="button" type=button onclick=reset_votes()>Reset stemmen</button>
+            <button class="button" type=button onclick=reset_auth()>Verwijder alle authenticatiecodes</button>
+            <button class="button" type=button onclick=reset_votes()>Verwijder alle stemmen</button>
           </fieldset>
           <fieldset class="fieldset">
             <legend class="text">Andere instellingen</legend>

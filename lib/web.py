@@ -152,7 +152,6 @@ def reset_auth():
 
 @post('/vote-admin/reset_votes')
 def reset_auth():
-    #TODO: reload the server to show the results
     user = request.query["user"]
     password = request.query["password"]
 
@@ -161,10 +160,13 @@ def reset_auth():
 
     if succes:
         lib.database.delete_votes(con)
-        con.commit()
-        return 'De wijzigingen zijn successvol verwerkt.'
+        try:
+            os.remove(os.getcwd() + '/static/results.webp')
+        except Exception:
+            pass
+
+        return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
     else:
-        con.commit()
         return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
 
 
