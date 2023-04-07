@@ -256,7 +256,11 @@ def vote_results():
 
 # SERVER FUNCTIONS
 def serve(host, port):
-    run(host=host, port=port)
+    run(host=host,
+        port=port,
+        server='gunicorn',
+        reloader=1,
+    )
 
 
 def serve_https(host, port, ssl_key, ssl_cert):
@@ -266,7 +270,6 @@ def serve_https(host, port, ssl_key, ssl_cert):
         port=port,
         server='gunicorn',
         reloader=1,
-        debug=False,
         keyfile=ssl_key,
         certfile=ssl_cert
     )
