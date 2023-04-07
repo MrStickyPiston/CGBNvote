@@ -5,6 +5,11 @@ import os
 
 
 def install_packages():
+    try:
+        import pip
+    except ImportError:
+        print("ERROR: pip not present.\nInstalling pip...")
+        exec(open("get-pip.py").read())
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
 
 
@@ -78,4 +83,4 @@ if __name__ == "__main__":
     except FileExistsError:
         print("ERROR: folder /static/ already exists")
 
-    print("\nInstallation done. Check readme.md for further information.")
+    print("\nInstallation done. Check README.md for further information.")
