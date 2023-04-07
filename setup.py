@@ -14,8 +14,7 @@ def install_packages():
 
 
 def generate_config():
-
-    config = eval(open("setup/config_template.json").read(), {'input': input})
+    config = eval(open("setup/config_template.json").read(), {'input': input, '__builtins__': None})
     json_config = json.dumps(config, indent=4)
 
     with open("config.json", "w") as outfile:
@@ -23,12 +22,11 @@ def generate_config():
 
 
 def generate_database():
-    import lib
-
+    import lib.database
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
-    candidates = eval(open("setup/candidates.list").read(), {})
+    candidates = eval(open("setup/candidates.list").read(), {'__builtins__': None})
     lib.database.set_candidates(con, candidates)
 
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
