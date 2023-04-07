@@ -41,11 +41,29 @@ def generate_database():
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
-    lib.database.set_candidates(con, [('Volkspartij voor Vrijheid en Democratie', 'vvd'),
-                                      ('Democraten 66', 'd66'),
-                                      ('Partij voor de Vrijheid', 'pvv'),
-                                      ('Christen-Democratisch Appèl', 'cda'),
-                                      ('Socialistische Partij', 'sp')])
+    lib.database.set_candidates(con,
+                                [
+                                 ('DISCLAIMER:', 'Deze partijen komen van de lijst "Nationaal vertegenwoordigd" op wikipedia op 07-04-2023'),
+                                 ('Volkspartij voor Vrijheid en Democratie', 'vvd'),
+                                 ('Democraten 66', 'd66'),
+                                 ('Partij voor de Vrijheid', 'pvv'),
+                                 ('Christen-Democratisch Appèl', 'cda'),
+                                 ('Socialistische Partij', 'sp'),
+                                 ('Partij van de Arbeid', 'pvda'),
+                                 ('GroenLinks', 'gl'),
+                                 ('Partij voor de Dieren ', 'pvdd'),
+                                 ('ChristenUnie', 'cu'),
+                                 ('Forum voor Democratie', 'fvd'),
+                                 ('JA21', 'ja21'),
+                                 ('Staatkundig Gereformeerde Partij', 'sgp'),
+                                 ('DENK', 'denk'),
+                                 ('Volt Nederland', 'volt'),
+                                 ('BoerBurgerBeweging', 'bbb'),
+                                 ('BIJ1', 'bij1'),
+                                 ('50PLUS', '50plus'),
+                                 ('Onafhankelijke Politiek Nederland', 'opnl')
+                                 ])
+
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
     lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
     print("NOTE: Voting is disabled now, but you can enable it on the admin panel. You can also edit the candidates there.")
