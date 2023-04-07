@@ -9,7 +9,7 @@ def install_packages():
         import pip
     except ImportError:
         print("ERROR: pip not present.\nInstalling pip...")
-        exec(open("get-pip.py").read())
+        exec(open("setup/get-pip.py").read())
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
 
 
@@ -41,28 +41,8 @@ def generate_database():
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
-    lib.database.set_candidates(con,
-                                [
-                                 ('DISCLAIMER:', 'Deze partijen komen van de lijst "Nationaal vertegenwoordigd" op wikipedia op 07-04-2023'),
-                                 ('Volkspartij voor Vrijheid en Democratie', 'vvd'),
-                                 ('Democraten 66', 'd66'),
-                                 ('Partij voor de Vrijheid', 'pvv'),
-                                 ('Christen-Democratisch Appèl', 'cda'),
-                                 ('Socialistische Partij', 'sp'),
-                                 ('Partij van de Arbeid', 'pvda'),
-                                 ('GroenLinks', 'gl'),
-                                 ('Partij voor de Dieren ', 'pvdd'),
-                                 ('ChristenUnie', 'cu'),
-                                 ('Forum voor Democratie', 'fvd'),
-                                 ('JA21', 'ja21'),
-                                 ('Staatkundig Gereformeerde Partij', 'sgp'),
-                                 ('DENK', 'denk'),
-                                 ('Volt Nederland', 'volt'),
-                                 ('BoerBurgerBeweging', 'bbb'),
-                                 ('BIJ1', 'bij1'),
-                                 ('50PLUS', '50plus'),
-                                 ('Onafhankelijke Politiek Nederland', 'opnl')
-                                 ])
+    candidates = eval(open("setup/candidates.list").read(), {})
+    lib.database.set_candidates(con, candidates)
 
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
     lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
