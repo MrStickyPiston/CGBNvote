@@ -12,6 +12,7 @@
         <form method="post" id="itxx7" action="/vote-admin/process" enctype="multipart/form-data">
           <fieldset class="fieldset">
             <legend class="text">Kandidatenlijst</legend>
+            <p class="text">Vul in het eerste vak de partijnaam in. Vul in het tweede vak een unieke afkorting voor die partij in, die begrijpbaar is voor andere mensen. Dit wordt weergegeven in de uitslagen.</p>
             <div id=candidates></div>
             <button class="button" type=button onclick=add_candidate()>Nieuwe toevoegen</button>
           </fieldset>
@@ -204,6 +205,9 @@
   height: 34px;
 }
 
+p.text{
+  margin: 0 0 5 0
+}
 
 #dbsettings .button{
   margin: 0 0 6 0
@@ -281,17 +285,26 @@ function get_settings(){
     } catch {return settings};
 }
 
+function validateCandidateIds(arr){
+  result = []
+  for (i in arr) {
+    result.push(arr[i][1])
+  }
+  return new Set(result).size == result.length
+}
+
 function save(){
-  update_editor(get_candidates())
+  candidates = get_candidates()
+  update_editor(candidates)
   update_settings(get_settings())
 
-  if (document.getElementById("password").value == ""){
+  if (!validateCandidateIds(candidates)){
+    alert("Een id mag niet meer dan een keer voorkomen.")
+  } else if (document.getElementById("password").value == ""){
     alert("Vul het wachtwoord-veld in.")
   } else{
-
-
     document.getElementById("itxx7").submit();
-   }
+  }
 }
 update_editor({{!candidates}});
 update_settings({{!settings}});
