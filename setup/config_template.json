@@ -1,0 +1,14 @@
+{
+  "ip": "0.0.0.0",
+  "port": "8080",
+  "admin_port": "80",
+
+  "ssl_port": "8443",
+  "ssl_admin_port": "443",
+  "ssl_key": "None",
+  "ssl_cert": "None",
+
+  "url": input("Enter the server url: "),
+  "mail": input("Enter server mail adress: "),
+  "mail_password": input("Enter mail (app)password: ")
+}

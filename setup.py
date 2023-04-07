@@ -15,21 +15,8 @@ def install_packages():
 
 def generate_config():
 
-    default_config = {
-        "ip": "0.0.0.0",
-        "port": "8080",
-        "admin_port": "80",
-
-        "ssl_port": "8443",
-        "ssl_admin_port": "443",
-        "ssl_key": "None",
-        "ssl_cert": "None",
-
-        "url": input("Enter the server url: "),
-        "mail": input("Enter server mail adress: "),
-        "mail_password": input("Enter mail (app)password: ")
-    }
-    json_config = json.dumps(default_config, indent=4)
+    config = eval(open("setup/config_template.json").read(), {'input': input})
+    json_config = json.dumps(config, indent=4)
 
     with open("config.json", "w") as outfile:
         outfile.write(json_config)
@@ -46,7 +33,7 @@ def generate_database():
 
     lib.database.set_admins(con, [(input("Enter admin username: "), input("Enter admin password: "))])
     lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
-    print("NOTE: Voting is disabled now, but you can enable it on the admin panel. You can also edit the candidates there.")
+    print("NOTE: Voting is disabled now, but you can enable it on the admin panel. The candidates of 2023 are already set, but if you need other candidates you can set them there. Also dont forget to remove the disclaimer.")
     con.close()
 
 

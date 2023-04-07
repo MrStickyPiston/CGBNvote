@@ -1,7 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 <title>CGBNvote admin panel</title>
 <body id="iz7c">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
   <header id="i7wq-2" class="header-banner">
   </header>
   <section id="iq09n-2" class="flex-sect">
