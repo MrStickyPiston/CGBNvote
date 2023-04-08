@@ -113,8 +113,8 @@ def vote_admin_panel():
 
 @post('/vote-admin/process')
 def process_changes():
-    candidates = eval(request.forms.get('candidate_list'))
-    settings = eval(request.forms.get('setting_list'))
+    candidates = eval(request.forms.get('candidate_list'), {'__builtins__': None})
+    settings = eval(request.forms.get('setting_list'), {'__builtins__': None})
 
     username = request.forms.get('username')
     password = request.forms.get('password')
