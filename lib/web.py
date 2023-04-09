@@ -260,6 +260,13 @@ def serve(host, port):
         port=port,
         server='gunicorn',
         reloader=1,
+        )
+
+
+def serve_android(host, port):
+    """option for android usage. NOT RECOMMENDED. (does not support async)"""
+    run(host=host,
+        port=port,
     )
 
 

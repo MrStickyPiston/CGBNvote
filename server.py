@@ -24,7 +24,10 @@ except Exception:
     exit("Incorrect config file")
 
 if __name__ == '__main__':
-    if ssl_key != "None" and ssl_cert != "None":
+    if 'ANDROID_BOOTLOGO' in os.environ:
+        print("Using android version. This might be buggy.")
+        lib.web.serve_android(host, port)
+    elif ssl_key != "None" and ssl_cert != "None":
         print("Using https")
         lib.web.serve_https(host, ssl_port, ssl_key, ssl_cert)
     else:
