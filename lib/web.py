@@ -1,5 +1,5 @@
 from bottle import route, get, post, request, run, static_file, template, error
-
+from ast import literal_eval
 import smtplib, ssl, os, json
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -113,9 +113,6 @@ def vote_admin_panel():
 
 @post('/vote-admin/process')
 def process_changes():
-    candidates = eval(request.forms.get('candidate_list'), {'__builtins__': None})
-    settings = eval(request.forms.get('setting_list'), {'__builtins__': None})
-
     username = request.forms.get('username')
     password = request.forms.get('password')
 
@@ -124,6 +121,9 @@ def process_changes():
     succes = lib.database.verify_admins(con, username, password)
 
     if succes:
+        candidates = literal_eval(request.forms.get('candidate_list'))
+        settings = literal_eval(request.forms.get('setting_list'))
+
         lib.database.set_candidates(con, candidates)
         lib.database.set_settings(con, settings)
         con.commit()
