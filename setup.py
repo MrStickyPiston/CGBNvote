@@ -10,7 +10,7 @@ def install_packages():
     except ImportError:
         print("ERROR: pip not present.\nInstalling pip...")
         exec(open("setup/get-pip.py").read())
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn', 'waitress'])
 
 
 def generate_config():
