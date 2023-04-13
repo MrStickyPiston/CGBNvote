@@ -4,6 +4,7 @@ CGBNvote has a few requirements:
  - Python 3.10 and above
  - 4gb ram
  - a not too old cpu. 
+Linux is recommended for hosting, Windows will work but its not really performant, and android is purely for dev **(NOT RECOMMENDED)**
 
 ### Installation
 Run setup.py. A terminal will pop up. The installation script will ask for the following things:  
@@ -29,12 +30,12 @@ IMPORTANT: make this a strong password that is hard to crack. Else hackers can h
 
 ### Usage outside of the network
 At default, CGBNvote allows everyone on the same network to access the site. If you want people not on your network to access the vote site, you have to do some port forwarding on port 443 for ssl or port 80 for tls. If you have access to your router you can look up a tutorial on the internet. Else you have to contact your network managers.  
-If you have setup port forwarding and want the server to be more accessible you can connect a domain to your ip. Create a A record containing your ip. In the file config.json, replace the"url":"OLD_VALUE" with "url":"YOUR_DOMAIN". Note that it can take up to 24 hours before dns is updated.
+If you have setup port forwarding and want the server to be more accessible you can connect a domain to your ip. Create a A record containing your ip. In the file config.json, replace the `"url":"OLD_VALUE"` with `"url":"YOUR_DOMAIN"`. Note that it can take up to 24 hours before dns is updated.
 
 ### ssl (https)
 To use https you need a certificate. You can create one yourself, but those self-signed certificates show a security warning on most browsers. If you dont want that you can use normal http, or buy a certificate at a certificate authority.
-Once you got a certificate you upload the .key and the .cert to ./ssl/. Then you add them to the config.json file.
+Once you got a certificate you upload the `.key` and the `.cert` to `./ssl/`. Then you add them to the `config.json` file.
 
 ### running the server
-Once you configurated your CGBNvote instance using the steps above, you can start the server by starting server.py. Navigate to the url that it gives you + vote-admin/ and edit the candidates to whatever you use the program for. Then change "voting_enabled" from 0 to 1 to enable voting.  
-If you want to get rid of the port, for example localhost**:8080** you have to run server.py as root / administrator. The program will automatically choose the right port for http/https. For http the standard port is 80, for https 443. If a webserver is ran on one of these ports, the webbrowser automatically adds it to the address, thus leaving no visible port.
+Once you configurated your CGBNvote instance using the steps above, you can start the server by starting `server.py`. Navigate to the url that it gives you + `/vote-admin/` and edit the candidates to whatever you use the program for. Then change `"voting_enabled"` from 0 to 1 to enable voting.  
+If you want to get rid of the port, for example localhost:*8080* you have to run server.py as root / administrator. The program will automatically choose the right port for http/https. For http the standard port is `80`, for https `443`. If a webserver is ran on one of these ports, the webbrowser automatically adds it to the address, thus leaving no visible port.
