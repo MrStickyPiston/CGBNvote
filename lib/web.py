@@ -255,27 +255,20 @@ def vote_results():
 
 
 # SERVER FUNCTIONS
-def serve(host, port):
+def serve(host, port, server_adapter):
     run(host=host,
         port=port,
-        server='gunicorn',
+        server=server_adapter,
         reloader=1,
-        )
-
-
-def serve_android(host, port):
-    """option for android usage. NOT RECOMMENDED. (does not support async)"""
-    run(host=host,
-        port=port,
     )
 
 
-def serve_https(host, port, ssl_key, ssl_cert):
+def serve_https(host, port, server_adapter, ssl_key, ssl_cert):
     sslcontext.load_default_certs()
     run(
         host=host,
         port=port,
-        server='gunicorn',
+        server=server_adapter,
         reloader=1,
         keyfile=ssl_key,
         certfile=ssl_cert
