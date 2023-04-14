@@ -21,7 +21,7 @@ def install_packages():
         exec(open("setup/get-pip.py").read())
 
     print(header("installing packages", char="~"))
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn'])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn', 'waitress'])
 
 
 def generate_config():

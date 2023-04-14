@@ -28,11 +28,11 @@ except Exception:
 if __name__ == '__main__':
     # Decide which server to use
     if os.name == 'nt':
-        print("""
+        print(f"""
 +------------------------------------------------------------+
-| host: windows (not recommended)                            |
-| server: waitress                                           |
-| This not very unstable but migth not suppport all features |""")
+| host:     windows (not really recommended)                 |
+| server:   waitress                                         |
+| workers:  {2*os.cpu_count()}                                               |""")
         server = 'waitress'
 
     elif 'ANDROID_BOOTLOGO' in os.environ:
@@ -40,26 +40,28 @@ if __name__ == '__main__':
 +------------------------------------------------------------+
 | host: Android (NOT RECOMMENDED)                            |
 | server: bottle                                             |
+| workers: 1                                                 |
+| workers: 1                                                 |
 | This should be for debug only.                             |
 | YOU WILL NOT RECEIVE ANY SUPPORT.                          |
 +------------------------------------------------------------+""")
-        server = 'bottle'
-        lib.web.serve(host, port, server)
+        lib.web.serve_bottle(host, port)
+        exit()
 
     else:
-        print("""
+        print(f"""
 +------------------------------------------------------------+
-| host: linux (recommended)                                  |
-| server: gunicorn                                           |
-| Ideal for hosting the prod server.                         |""")
+| host:     linux (recommended)                              |
+| server:   gunicorn                                         |
+| workers:  {2*os.cpu_count()}                                               |""")
         server = 'gunicorn'
 
     # Start the server
     if ssl_key != "None" and ssl_cert != "None":
-        print("""| Mode: http                                                 |
+        print("""| Mode:     https                                            |
 +------------------------------------------------------------+""")
-        lib.web.serve_https(host, ssl_port, server, ssl_key, ssl_cert)
+        lib.web.serve_https(host, ssl_port, server, 2*os.cpu_count(), ssl_key, ssl_cert)
     else:
-        print("""| Mode: https                                                |
+        print("""| Mode:     http                                             |
 +------------------------------------------------------------+""")
-        lib.web.serve(host, port, server)
+        lib.web.serve_http(host, port, server, 2 * os.cpu_count())

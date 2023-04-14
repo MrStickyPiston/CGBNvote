@@ -255,20 +255,30 @@ def vote_results():
 
 
 # SERVER FUNCTIONS
-def serve(host, port, server_adapter):
+def serve_bottle(host, port):
+    run(host=host,
+        port=port,
+        reloader=1,
+        )
+
+
+def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
     run(host=host,
         port=port,
         server=server_adapter,
+        workers=workers,
         reloader=1,
-    )
+        )
 
 
-def serve_https(host, port, server_adapter, ssl_key, ssl_cert):
+def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key='ssl/server.key',
+                ssl_cert='ssl/server.crt'):
     sslcontext.load_default_certs()
     run(
         host=host,
         port=port,
         server=server_adapter,
+        workers=workers,
         reloader=1,
         keyfile=ssl_key,
         certfile=ssl_cert
@@ -277,4 +287,4 @@ def serve_https(host, port, server_adapter, ssl_key, ssl_cert):
 
 if __name__ == "__main__":
     print("Starting debug")
-    serve("localhost", 8080)
+    serve_bottle("localhost", 8080)
