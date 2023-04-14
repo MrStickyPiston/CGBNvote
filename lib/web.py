@@ -15,8 +15,11 @@ try:
         try:
             server = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=sslcontext)
             server.login(mailserver, mailserver_password)
+            server.close()
+            disable_mail = False
         except Exception:
             print("ERROR: incorrect mail credentials")
+            disable_mail = True
         page_url = data["url"]
 except Exception:
     exit("Incorrect config file")
@@ -64,7 +67,10 @@ Je authenticatiecode voor CGBNvotes is {code[0]}.\nDeze code vervalt over {durat
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(styledMail, "html"))
 
+    server = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=sslcontext)
+    server.login(mailserver, mailserver_password)
     server.sendmail(mailserver, email, message.as_string())
+    server.close()
 
 
 def candidates_html():
@@ -221,6 +227,9 @@ def process_vote():
 
 @post('/send_code')
 def send_code():
+    if disable_mail:
+        return "De mailservers zijn momenteel niet beschikbaar. Vraag aan de beheerder of dit een fout is."
+
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()
