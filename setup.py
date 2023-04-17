@@ -34,7 +34,7 @@ def generate_config():
 
 def generate_database():
     def check_password(password):
-        SpecialSym = ['$', '@', '#', '%', "_"]
+        SpecialSym = """!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
         valid = True
 
         if len(password) < 6:
@@ -54,7 +54,7 @@ def generate_database():
             valid = False
 
         if not any(char in SpecialSym for char in password):
-            print('Password should have at least one of the symbols $@#%_')
+            print('Password should have at least one special character')
             valid = False
         if valid:
             return valid
@@ -72,7 +72,14 @@ def generate_database():
     lib.database.set_candidates(con, candidates)
 
     lib.database.set_admins(con, [(input("Enter admin username: "), get_password())])
-    lib.database.set_settings(con, [("voting_active", "0"), ("live_results", "0"), ("code_duration", "5")])
+    lib.database.set_settings(con, 
+                                 [
+                                 ("vote_name": "2e kamer verkiezingen"), 
+                                 ("voting_active", "0"), 
+                                 ("live_results", "0"), 
+                                 ("code_duration", "5")
+                                 ]
+                                 )
     print(
         "NOTE: Voting is disabled now, but you can enable it on the admin panel. The candidates of 2023 are already set, but if you need other candidates you can set them there. Also dont forget to remove the disclaimer.")
     con.close()
