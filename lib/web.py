@@ -127,6 +127,7 @@ def process_changes():
     succes = lib.database.verify_admins(con, username, password)
 
     if succes:
+        print(request.forms.get('setting_list'))
         candidates = literal_eval(request.forms.get('candidate_list'))
         settings = literal_eval(request.forms.get('setting_list'))
 
@@ -183,8 +184,14 @@ def collect_vote():
         con.close()
         return template("custom", {
             "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
+
+    payload = {
+        "vote_name": lib.database.get_setting(con, "vote_name"),
+        "select_vote": candidates_html()
+    }
+
     con.close()
-    return template("collect_votes", {"select_vote": candidates_html()})
+    return template("collect_votes", payload)
 
 
 @post('/vote')

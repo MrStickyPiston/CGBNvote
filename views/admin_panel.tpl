@@ -221,11 +221,10 @@ p.text{
   footerHTML = ``;
 
   for (i in candidates){
-  console.log(candidates[i][0])
     candidatesHTML += `
     <div id="candidateItem">
         <input type=text name=display-${i} id="input" placeholder="Weergavenaam" value='${candidates[i][0]}'></input>
-        <input type=text name=id-${i} id="input" placeholder="Identificator" value= '${candidates[i][1]}'></input>
+        <input type=text name=id-${i} id="input" placeholder="Identificator" value='${candidates[i][1]}'></input>
 
 
         <div id=buttons>
@@ -260,7 +259,7 @@ function add_candidate(){
 }
 
 function update_settings(settings){
-    headerHTML = `<input type="hidden" name="setting_list" value=${JSON.stringify(settings)}>`;
+    headerHTML = `<input type="hidden" name="setting_list" value='${JSON.stringify(settings)}'>`;
     settingsHTML = ``;
     footerHTML = ``;
 
@@ -268,7 +267,7 @@ function update_settings(settings){
         settingsHTML += `
         <div id="settingItem">
         <p id=text name=setting-${i}>${settings[i][0]}</p>
-        <input type=text name=setting-value-${i} id="input" placeholder="Weergavenaam" value= ${settings[i][1]}></input>
+        <input type=text name=setting-value-${i} id="input" placeholder="Weergavenaam" value='${settings[i][1]}'></input>
         </div>`;
     }
     document.getElementById('settings').innerHTML = headerHTML + settingsHTML + footerHTML;

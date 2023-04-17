@@ -3,3 +3,4 @@
 /static/results.webp
 /ssl/
 !/ssl/readme.md
+/.idea/
