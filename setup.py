@@ -25,7 +25,7 @@ def install_packages():
 
 
 def generate_config():
-    config = eval(open("setup/config_template.json").read(), {'input': input, '__builtins__': None})
+    config = eval(open("setup/templates/project_config.json").read(), {'input': input, '__builtins__': None})
     json_config = json.dumps(config, indent=4)
 
     with open("config.json", "w") as outfile:
@@ -34,7 +34,7 @@ def generate_config():
 
 def generate_database():
     def check_password(password):
-        SpecialSym = """!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
+        SpecialSym = """!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"""
         valid = True
 
         if len(password) < 6:
@@ -68,18 +68,13 @@ def generate_database():
     con = lib.database.connect("database.db")
     lib.database.setup(con)
 
-    candidates = eval(open("setup/candidates.list").read(), {'__builtins__': None})
+    candidates = eval(open("setup/templates/candidates.list").read(), {'__builtins__': None})
+    db_config = eval(open("setup/templates/settings.list").read(), {'__builtins__': None})
+
     lib.database.set_candidates(con, candidates)
 
     lib.database.set_admins(con, [(input("Enter admin username: "), get_password())])
-    lib.database.set_settings(con, 
-                                 [
-                                 ("vote_name": "2e kamer verkiezingen"), 
-                                 ("voting_active", "0"), 
-                                 ("live_results", "0"), 
-                                 ("code_duration", "5")
-                                 ]
-                                 )
+    lib.database.set_settings(con, db_config)
     print(
         "NOTE: Voting is disabled now, but you can enable it on the admin panel. The candidates of 2023 are already set, but if you need other candidates you can set them there. Also dont forget to remove the disclaimer.")
     con.close()
