@@ -25,7 +25,7 @@ def install_packages():
 
 
 def generate_config():
-    config = eval(open("setup/templates/project_config.json").read(), {'input': input, '__builtins__': None})
+    config = eval(open("setup/templates/project_config.pyjson").read(), {'input': input, '__builtins__': None})
     json_config = json.dumps(config, indent=4)
 
     with open("config.json", "w") as outfile:

@@ -105,6 +105,7 @@ def vote_admin_panel():
     con.close()
 
     if succes:
+        print(f"Successful login attempt at /vote-admin by {user}")
         payload = {
             "candidates": str(candidates),
             "settings": str(settings),
@@ -113,6 +114,7 @@ def vote_admin_panel():
         }
         return template("admin_panel", payload)
     else:
+        print(f"Failed login attempt at /vote-admin by {user}")
         return template("script", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
@@ -127,15 +129,18 @@ def process_changes():
     succes = lib.database.verify_admins(con, username, password)
 
     if succes:
-        print(request.forms.get('setting_list'))
         candidates = literal_eval(request.forms.get('candidate_list'))
         settings = literal_eval(request.forms.get('setting_list'))
+
+        print(f"Successful login attempt at /vote-admin/process by {username}")
+        print(f"""Updating the changes from the admin dashboard:\ncandidates:\t{candidates}\nsettings:\t{settings}""")
 
         lib.database.set_candidates(con, candidates)
         lib.database.set_settings(con, settings)
         con.commit()
         return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
     else:
+        print(f"Failed login attempt at /vote-admin/process by {username}")
         return template("script", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
@@ -150,9 +155,11 @@ def reset_auth():
 
     if succes:
         lib.database.delete_codes(con)
+        print(f"Successful login attempt at /vote-admin/reset-auth by {user}")
         con.commit()
         return 'De wijzigingen zijn successvol verwerkt.'
     else:
+        print(f"Failed login attempt at /vote-admin/reset-auth by {user}")
         con.commit()
         return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
 
@@ -167,13 +174,16 @@ def reset_auth():
 
     if succes:
         lib.database.delete_votes(con)
+        print(f"Successful login attempt at /vote-admin/reset_votes by {user}")
         try:
             os.remove(os.getcwd() + '/static/results.webp')
         except Exception:
             pass
-
+        con.commit()
         return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
     else:
+        print(f"Failed login attempt at /vote-admin/reset_votes by {user}")
+        con.commit()
         return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
 
 
@@ -237,34 +247,36 @@ def send_code():
     if disable_mail:
         return "De mailservers zijn momenteel niet beschikbaar. Vraag aan de beheerder of dit een fout is."
 
-    con = lib.database.connect("database.db")
-    if lib.database.get_setting(con, "voting_active") == "0":
-        con.close()
-        return f"De verkiezingen zijn nu helaas niet actief. Kijk op {page_url}/vote_results voor de resultaten."
-    con.close()
+    try:
+        con = lib.database.connect("database.db")
+        if lib.database.get_setting(con, "voting_active") == "0":
+            con.close()
+            return f"De verkiezingen zijn nu helaas niet actief. Kijk op {page_url}/vote_results voor de resultaten."
 
-    email = request.query["userid"] + "@cgbn.nl"
+        email = request.query["userid"] + "@cgbn.nl"
+        code = lib.database.generate_code(con, request.query["userid"])
 
-    con = lib.database.connect("database.db")
-    code = lib.database.generate_code(con, request.query["userid"])
-
-    if code[1] == "alreadyVotedException":
-        return "Sorry, maar u hebt al gestemd."
-    elif code[1] == "codeNotExpiredException":
-        return "Sorry, maar u hebt al een werkende code ontvangen / is naar u op weg."
-    else:
-        send_mail(code, email)
-        return f"De authenticatiecode is succesvol verzonden naar {email}."
-
+        if code[1] == "alreadyVotedException":
+            return "Sorry, maar u hebt al gestemd."
+        elif code[1] == "codeNotExpiredException":
+            return "Sorry, maar u hebt al een werkende code ontvangen / is naar u op weg."
+        else:
+            send_mail(code, email)
+            print(f"Successfully send a email to {email}")
+            return f"De authenticatiecode is succesvol verzonden naar {email}."
+    except Exception as e:
+        print(f"Failed to send email to {email}")
+        return e
 
 @get('/vote-results')
 def vote_results():
     con = lib.database.connect("database.db")
 
-    lib.plot.plot_votes(con)
     results = '<img src=/static/results.webp style="max-width:100%"></img>'
     if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
+    else:
+        lib.plot.plot_votes(con)
 
     con.commit()
     return template("custom", {"content": results})
