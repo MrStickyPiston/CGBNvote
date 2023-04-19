@@ -18,7 +18,8 @@ def install_packages():
         print("Pip has been located.\nNot installing pip.")
     except ImportError:
         print("ERROR: pip not present.\nInstalling pip...")
-        exec(open("setup/get-pip.py").read())
+        subprocess.check_call([sys.executable, 'setup/get-pip.py'])
+        print("installed pip")
 
     print(header("installing packages", char="~"))
     subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn', 'waitress'])

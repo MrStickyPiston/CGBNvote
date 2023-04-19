@@ -74,7 +74,7 @@ Je authenticatiecode voor CGBNvotes is {code[0]}.\nDeze code vervalt over {durat
 
 
 def candidates_html():
-    start = '<select name="vote" id="vote">\n'
+    start = '<select name="vote" id="vote" required>\n<option value="" selected disabled hidden> Selecteer waarop je wil stemmen </option>'
     mid = ''
     end = '</select>\n'
 
