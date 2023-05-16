@@ -62,7 +62,7 @@ def send_mail(code, email):
     duration = lib.database.get_setting(con, "code_duration")
 
     text = f"""\
-Je authenticatiecode voor CGBNvotes is {code[0]}.\nDeze code vervalt over {duration} minuten.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
+Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {duration} minuten.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
     styledMail = template("mail", {"code": code[0], "PAGE_URL": page_url, "code_duration": duration})
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(styledMail, "html"))
