@@ -10,5 +10,7 @@
 
   "url": input("Enter the server url: "),
   "mail": input("Enter server mail adress: "),
-  "mail_password": input("Enter mail (app)password: ")
+  "mail_password": input("Enter mail (app)password: "),
+
+  "workers_per_core": 2
 }

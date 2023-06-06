@@ -22,6 +22,8 @@ try:
         ssl_key = data["ssl_key"]
         ssl_cert = data["ssl_cert"]
 
+        workers = data["workers_per_core"] * os.cpu_count()
+
 except Exception:
     exit("Incorrect config file")
 
@@ -32,7 +34,7 @@ if __name__ == '__main__':
 +------------------------------------------------------------+
 | host:     windows (not really recommended)                 |
 | server:   waitress                                         |
-| workers:  {2*os.cpu_count()}                                               |""")
+| workers:  {workers}                                               |""")
         server = 'waitress'
 
     elif 'ANDROID_BOOTLOGO' in os.environ:
@@ -40,7 +42,6 @@ if __name__ == '__main__':
 +------------------------------------------------------------+
 | host: Android (NOT RECOMMENDED)                            |
 | server: bottle                                             |
-| workers: 1                                                 |
 | workers: 1                                                 |
 | This should be for debug only.                             |
 | YOU WILL NOT RECEIVE ANY SUPPORT.                          |
@@ -53,15 +54,15 @@ if __name__ == '__main__':
 +------------------------------------------------------------+
 | host:     linux (recommended)                              |
 | server:   gunicorn                                         |
-| workers:  {2*os.cpu_count()}                                               |""")
+| workers:  {workers}                                               |""")
         server = 'gunicorn'
 
     # Start the server
     if ssl_key != "None" and ssl_cert != "None":
         print("""| Mode:     https                                            |
 +------------------------------------------------------------+""")
-        lib.web.serve_https(host, ssl_port, server, 2*os.cpu_count(), ssl_key, ssl_cert)
+        lib.web.serve_https(host, ssl_port, server, workers, ssl_key, ssl_cert)
     else:
         print("""| Mode:     http                                             |
 +------------------------------------------------------------+""")
-        lib.web.serve_http(host, port, server, 2 * os.cpu_count())
+        lib.web.serve_http(host, port, server, workers)
