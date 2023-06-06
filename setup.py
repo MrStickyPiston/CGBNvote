@@ -125,3 +125,6 @@ if __name__ == "__main__":
         print("ERROR: folder /static/ already exists")
 
     print("\nInstallation done. Check README.md for further information.")
+
+    if input("Do you want to start the server? (y/n): ") == "y":
+        subprocess.check_call([sys.executable, "server.py"])
