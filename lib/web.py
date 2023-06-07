@@ -101,7 +101,7 @@ def vote_admin_panel():
         return template("admin_panel", payload)
     else:
         print(f"Failed login attempt at /vote-admin by {user}")
-        return template("script", {
+        return template("admin_login", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
@@ -233,7 +233,7 @@ def process_vote():
         elif success == "alreadyVotedException":
             error = "U kunt helaas geen tweede keer stemmen."
         elif success == "codeExpiredException":
-            error = "De tijd om te stemmen met deze code is verlopen. vraag een nieuwe code aan om te stemmen."
+            error = "De tijd om te stemmen met deze code is verlopen. Vraag een nieuwe code aan om te stemmen."
         elif success == "candidateException":
             error = "Error: Kandidaat niet gevonden. rapporteer dit aan de administrator."
         else:
