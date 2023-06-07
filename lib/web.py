@@ -62,7 +62,7 @@ def send_mail(code, email):
     duration = lib.database.get_setting(con, "code_duration")
 
     text = f"""\
-Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {duration} minuten.\nNa de verkiezingen kun je de uitslag bekijken op {page_url}/vote-results."""
+Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {duration} minuten."""
     styledMail = template("mail", {"code": code[0], "PAGE_URL": page_url, "code_duration": duration})
     message.attach(MIMEText(text, "plain"))
     message.attach(MIMEText(styledMail, "html"))
@@ -71,20 +71,6 @@ Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {durati
     server.login(mailserver, mailserver_password)
     server.sendmail(mailserver, email, message.as_string())
     server.close()
-
-
-def candidates_html():
-    start = '<select name="vote" id="vote" required>\n<option value="" selected disabled hidden> Selecteer waarop je wil stemmen </option>'
-    mid = ''
-    end = '</select>\n'
-
-    con = lib.database.connect("database.db")
-    candidates = lib.database.get_candidates(con)
-
-    for i in candidates:
-        mid += f'<option value="{i[1]}">{i[0]}</option>\n'
-
-    return start + mid + end
 
 
 @get('/vote-admin')
@@ -189,6 +175,19 @@ def reset_auth():
 
 @get('/vote')
 def collect_vote():
+    def candidates_html():
+        start = '<select name="vote" id="vote" required>\n<option value="" selected disabled hidden> Selecteer waarop je wil stemmen </option>'
+        mid = ''
+        end = '</select>\n'
+
+        con = lib.database.connect("database.db")
+        candidates = lib.database.get_candidates(con)
+
+        for i in candidates:
+            mid += f'<option value="{i[1]}">{i[0]}</option>\n'
+
+        return start + mid + end
+
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()

@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 <title>CGBNvote admin panel</title>
-<body id="iz7c">
+<body>
   <header id="i7wq-2" class="header-banner">
   </header>
   <section id="iq09n-2" class="flex-sect">
@@ -8,23 +8,23 @@
       <div id="ibn2g-2" class="flex-title">CGBNvote admin panel
         <br/>
       </div>
-      <div id="iy8d-2" class="cards">
-        <form method="post" id="itxx7" action="/vote-admin">
-          <fieldset id="ih2z2">
-            <legend id="i9w0u">Gebruikersnaam</legend>
-            <input type="text" id="user" name="user" required/>
-          </fieldset>
-          <fieldset id="ispc8">
-            <legend id="i0b1u">Wachtwoord</legend>
-            <input type="password" id="imzij" name="password" required/>
-          </fieldset>
-          <button type="submit" id="ifdlg">log in</button>
-          <div id="i2qefk">
-          </div>
-          <div id="ibo35">
-          </div>
-        </form>
-      </div>
+    </div>
+    <div id="iy8d-2" class="cards">
+      <form method="post" id="itxx7" action="/vote-admin">
+        <fieldset id="ih2z2">
+          <legend id="i9w0u">Gebruikersnaam</legend>
+          <input type="text" id="user" name="user" required/>
+        </fieldset>
+        <fieldset id="ispc8">
+          <legend id="i0b1u">Wachtwoord</legend>
+          <input type="password" id="imzij" name="password" required/>
+        </fieldset>
+        <button type="submit" id="ifdlg">log in</button>
+        <div id="i2qefk">
+        </div>
+        <div id="ibo35">
+        </div>
+      </form>
     </div>
   </section>
 </body>
@@ -88,6 +88,10 @@
     box-shadow:0 0 5px 0 black;
     opacity:0.86;
     border-radius:5px 5px 5px 5px;
+    margin:0 10 0 10;
+    max-width:400px;
+    min-width:300px;
+    width:25%;
   }
   #user{
     display:flex;
@@ -152,6 +156,16 @@
   }
   input[type=number]{
     -moz-appearance:textfield;
+  }
+  @media (max-width: 992px){
+    #itxx7{
+      width:50%;
+    }
+  }
+  @media (max-width: 480px){
+    #itxx7{
+      width:80%;
+    }
   }
 </style>
 <script>{{!script}}</script>
