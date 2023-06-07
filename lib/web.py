@@ -1,4 +1,4 @@
-from bottle import route, get, post, request, run, static_file, template, error
+from bottle import route, get, post, request, run, static_file, template, error, response, redirect
 from ast import literal_eval
 import smtplib, ssl, os, json
 from email.mime.text import MIMEText
@@ -73,34 +73,65 @@ Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {durati
     server.close()
 
 
+def admin_panel(user):
+    con = lib.database.connect("database.db")
+
+    candidates = lib.database.get_candidates(con)
+    settings = lib.database.get_settings(con)
+    con.commit()
+
+    payload = {
+        "candidates": str(candidates),
+        "settings": str(settings),
+        "username": user,
+        "password": "session"
+    }
+    return template("admin_panel", payload)
+
+
 @get('/vote-admin')
 def vote_admin_login():
+    con = lib.database.connect("database.db")
+
+    user = lib.database.verify_session(con, request.get_cookie("SESSION"))
+
+    if user is not None:
+        return admin_panel(user)
+
     return template("admin_login", {"script": ""})
 
 
 @post('/vote-admin')
 def vote_admin_panel():
+    con = lib.database.connect("database.db")
+    user = lib.database.verify_session(con, request.get_cookie("SESSION"))
+
+    if user is not None:
+        redirect('/vote-admin')
+        return
+
+    con.commit()
+
     user = request.forms.get('user')
     password = request.forms.get('password')
 
-    con = lib.database.connect("database.db")
     succes = lib.database.verify_admins(con, user, password)
-
-    candidates = lib.database.get_candidates(con)
-    settings = lib.database.get_settings(con)
-    con.close()
+    con.commit()
 
     if succes:
         print(f"Successful login attempt at /vote-admin by {user}")
-        payload = {
-            "candidates": str(candidates),
-            "settings": str(settings),
-            "username": user,
-            "password": password
-        }
-        return template("admin_panel", payload)
+
+        session = lib.encryption.generate_session()
+
+        lib.database.set_session(con, session, user)
+        response.set_cookie("SESSION", session, path='/', max_age=60*10)
+        con.close()
+
+        return admin_panel(user)
+
     else:
         print(f"Failed login attempt at /vote-admin by {user}")
+        con.close()
         return template("admin_login", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
@@ -108,13 +139,9 @@ def vote_admin_panel():
 @post('/vote-admin/process')
 def process_changes():
     username = request.forms.get('username')
-    password = request.forms.get('password')
-
     con = lib.database.connect("database.db")
 
-    succes = lib.database.verify_admins(con, username, password)
-
-    if succes:
+    if username == lib.database.verify_session(con, request.get_cookie("SESSION")):
         candidates = literal_eval(request.forms.get('candidate_list'))
         settings = literal_eval(request.forms.get('setting_list'))
 
@@ -125,40 +152,38 @@ def process_changes():
         lib.database.set_settings(con, settings)
         con.commit()
         return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
+
     else:
         print(f"Failed login attempt at /vote-admin/process by {username}")
+        con.commit()
         return template("script", {
-            "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
+            "script": "alert('Uw sessie id klopt niet. Probeer opnieuw in te loggen.'); history.back()"})
 
 
 @post('/vote-admin/reset_auth')
 def reset_auth():
     user = request.query["user"]
-    password = request.query["password"]
-
     con = lib.database.connect("database.db")
-    succes = lib.database.verify_admins(con, user, password)
 
-    if succes:
+    if user == lib.database.verify_session(con, request.get_cookie("SESSION")):
         lib.database.delete_codes(con)
         print(f"Successful login attempt at /vote-admin/reset-auth by {user}")
         con.commit()
+
         return 'De wijzigingen zijn successvol verwerkt.'
     else:
         print(f"Failed login attempt at /vote-admin/reset-auth by {user}")
         con.commit()
-        return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
+
+        return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
 
 
 @post('/vote-admin/reset_votes')
 def reset_auth():
     user = request.query["user"]
-    password = request.query["password"]
-
     con = lib.database.connect("database.db")
-    succes = lib.database.verify_admins(con, user, password)
 
-    if succes:
+    if user == lib.database.verify_session(con, request.get_cookie("SESSION")):
         lib.database.delete_votes(con)
         print(f"Successful login attempt at /vote-admin/reset_votes by {user}")
         try:
@@ -167,13 +192,14 @@ def reset_auth():
             pass
         con.commit()
         return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
+
     else:
         print(f"Failed login attempt at /vote-admin/reset_votes by {user}")
         con.commit()
-        return 'Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'
+        return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
 
 
-@get('/vote')
+@get('/')
 def collect_vote():
     def candidates_html():
         start = '<select name="vote" id="vote" required>\n<option value="" selected disabled hidden> Selecteer waarop je wil stemmen </option>'
@@ -203,7 +229,7 @@ def collect_vote():
     return template("collect_votes", payload)
 
 
-@post('/vote')
+@post('/')
 def process_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
@@ -266,6 +292,7 @@ def send_code():
     except Exception as e:
         print(f"Failed to send email to {email}")
         return e
+
 
 @get('/vote-results')
 def vote_results():

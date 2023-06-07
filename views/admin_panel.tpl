@@ -33,7 +33,6 @@
               <button type="button" class="button" onclick="save()">Opslaan</button>
               <div id=buffer></div>
               <input type="hidden" name="username" value={{username}}>
-              <input type="password" name="password" required id="password" placeholder="wachtwoord"/>
             </div>
           </fieldset>
           <div id="ibo35">
@@ -299,8 +298,6 @@ function save(){
 
   if (!validateCandidateIds(candidates)){
     alert("Een id mag niet meer dan een keer voorkomen.")
-  } else if (document.getElementById("password").value == ""){
-    alert("Vul het wachtwoord-veld in.")
   } else{
     document.getElementById("itxx7").submit();
   }
@@ -310,12 +307,12 @@ update_settings({{!settings}});
 </script>
 <script>
 function reset_auth(){
-    fetch('/vote-admin/reset_auth?user={{username}}&password={{password}}', {method: 'POST'})
+    fetch('/vote-admin/reset_auth?user={{username}}', {method: 'POST'})
       .then(response => response.text())
       .then(text => alert(text));
 };
 function reset_votes(){
-    fetch('/vote-admin/reset_votes?user={{username}}&password={{password}}', {method: 'POST'})
+    fetch('/vote-admin/reset_votes?user={{username}}', {method: 'POST'})
       .then(response => response.text())
       .then(text => alert(text));
 };

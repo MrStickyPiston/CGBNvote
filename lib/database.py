@@ -229,9 +229,15 @@ def get_settings(con):
     settings = cur.fetchall()
     return to_list(settings)
 
+
 try:
     con = connect("database.db")
     codeExpiration = int(get_setting(con, "code_duration"))
+
+    cur = con.cursor()
+
+    cur.execute("""DROP TABLE IF EXISTS sessions""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS sessions(session, user, expiration)""")
     con.commit()
 except sqlite3.OperationalError:
     pass
@@ -248,3 +254,22 @@ if __name__ == "__main__":
 
     print(insert_vote(con, "test2", code, "Zweintje"))
     con.close()
+
+
+def set_session(con, session, user):
+    cur = con.cursor()
+    cur.execute("""INSERT INTO sessions (session, user, expiration) values (?,?,?)""", (session, user, time.time() + 60*10))
+    con.commit()
+
+
+def verify_session(con, session):
+    cur = con.cursor()
+    cur.execute("SELECT * FROM 'sessions' WHERE (session = ? AND expiration > ?)", (session, time.time()))
+
+    results = cur.fetchall()
+    con.commit()
+
+    try:
+        return results[0][1]
+    except IndexError:
+        return None
