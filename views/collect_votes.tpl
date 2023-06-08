@@ -10,7 +10,7 @@
       <!-- <div id="iprpw-2" class="flex-desc">Stem hier voor de CGBNvote {{vote_name}}. <br/> -->
       </div>
       <div id="iy8d-2" class="cards">
-        <form method="post" id="itxx7" action="/vote">
+        <form method="post" id="itxx7" action="/">
           <fieldset id="ih2z2">
             <legend id="i9w0u">Voer je leerlingnummer in (voor authenticatie):</legend>
             <input type="number" id="user" name="user" required/>

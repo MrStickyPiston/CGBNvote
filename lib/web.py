@@ -244,9 +244,11 @@ def process_vote():
 
     con = lib.database.connect("database.db")
     success = lib.database.insert_vote(con, userid, code, vote)
+
+    vote_display = "NONE"
+
     if success == "success":
         candidates = lib.database.get_candidates(con)
-        vote_display = "NONE"
         for i in candidates:
             if i[1] == vote:
                 vote_display = i[0]
@@ -255,13 +257,15 @@ def process_vote():
             "content": f"Bedankt voor het stemmen op {vote_display}. Je stem zal anoniem worden verwerkt."})
     else:
         if success == "authException":
-            error = "De code komt niet overeen met de gebruiker"
+            error = f"De code komt niet overeen met de gebruiker {userid}"
+        elif success == "credentialsNotFoundException":
+            error = f"Gebruikersnaam {userid} niet gevonden in het systeem"
         elif success == "alreadyVotedException":
             error = "U kunt helaas geen tweede keer stemmen."
         elif success == "codeExpiredException":
             error = "De tijd om te stemmen met deze code is verlopen. Vraag een nieuwe code aan om te stemmen."
         elif success == "candidateException":
-            error = "Error: Kandidaat niet gevonden. rapporteer dit aan de administrator."
+            error = f"Error: Kandidaat {vote_display} niet gevonden. rapporteer dit aan de administrator."
         else:
             error = success
         return template("custom", {"content": error})

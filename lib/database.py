@@ -17,29 +17,20 @@ def connect(db):
 
 def setup(con):
     cur = con.cursor()
-    cur.execute("""CREATE TABLE IF NOT EXISTS auth(userid,
-                                                   code, 
-                                                   voted, 
-                                                   timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
-                                                   )""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS votes(vote,
-                                                   timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
-                                                   )""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS candidates(id,
-                                                       displayname
-                                                       )""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS admins(username,
-                                                    password_hash
-                                                           )""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS settings(setting,
-                                                      value
-                                                            )""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS auth(userid, code, voted, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS votes(vote, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS candidates(id, displayname)""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS admins(username, password_hash)""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS settings(setting, value)""")
+    cur.execute("""CREATE TABLE IF NOT EXISTS sessions(session, user, expiration)""")
 
     con.commit()
 
 
 def generate_code(con, userid):
     cur = con.cursor()
+
+    codeExpiration = int(get_setting(con, "code_duration"))
 
     cur.execute("SELECT * FROM 'auth' WHERE userid = ?", [userid])
     existing = cur.fetchall()
@@ -165,6 +156,8 @@ def insert_vote(con, userid, code, vote):
     cur = con.cursor()
     candidates = get_candidates(con)
 
+    codeExpiration = int(get_setting(con, "code_duration"))
+
     cur.execute("SELECT * FROM 'auth' WHERE userid = ?", [userid])
     try:
         credentials = cur.fetchall()[0]
@@ -230,35 +223,10 @@ def get_settings(con):
     return to_list(settings)
 
 
-try:
-    con = connect("database.db")
-    codeExpiration = int(get_setting(con, "code_duration"))
-
-    cur = con.cursor()
-
-    cur.execute("""DROP TABLE IF EXISTS sessions""")
-    cur.execute("""CREATE TABLE IF NOT EXISTS sessions(session, user, expiration)""")
-    con.commit()
-except sqlite3.OperationalError:
-    pass
-
-if __name__ == "__main__":
-    con = connect("dev_database.db")
-    setup(con)
-    cur = con.cursor()
-
-    set_candidates(con, [('Zweintje', 'zweintje'), ('Partij Voor de Varkens', 'pvv')])
-
-    userid = "test2"
-    code = generate_code(con, userid)
-
-    print(insert_vote(con, "test2", code, "Zweintje"))
-    con.close()
-
-
 def set_session(con, session, user):
     cur = con.cursor()
-    cur.execute("""INSERT INTO sessions (session, user, expiration) values (?,?,?)""", (session, user, time.time() + 60*10))
+    cur.execute("""INSERT INTO sessions (session, user, expiration) values (?,?,?)""",
+                (session, user, time.time() + 60 * 10))
     con.commit()
 
 
