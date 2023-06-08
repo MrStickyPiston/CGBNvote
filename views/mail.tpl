@@ -190,7 +190,7 @@
                             >
                           <div
                                style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:left;color:#525252;"
-                               >Je authenticatiecode voor CGBNvote is <strong>{{code}}</strong>.<br>De code vervalt over {{code_duration}} minuten. <br>Na de verkiezingen kun je de uitslag <a href="{{PAGE_URL}}/vote-results">hier</a> bekijken.
+                               ><p>Je authenticatiecode voor CGBNvote is <strong>{{code}}</strong>.<br>De code vervalt over {{code_duration}} minuten. <br>Na de verkiezingen kun je de uitslag <a href="http://{{PAGE_URL}}/results">hier</a> bekijken.</p>
                             <br>
                           </div>
                         </td>

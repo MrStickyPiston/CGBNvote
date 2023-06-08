@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 from bottle import route, get, post, request, run, static_file, template, error, response, redirect
 from ast import literal_eval
 import smtplib, ssl, os, json
@@ -320,7 +323,7 @@ def send_code():
         return e
 
 
-@get('/vote-results')
+@get('/results')
 def vote_results():
     con = lib.database.connect("database.db")
 
@@ -328,7 +331,7 @@ def vote_results():
     if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
     else:
-        lib.plot.plot_votes(con)
+        subprocess.check_call([sys.executable, "lib/plot.py"])
 
     con.commit()
     return template("custom", {"content": results})
