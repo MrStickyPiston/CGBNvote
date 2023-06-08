@@ -17,7 +17,8 @@ def connect(db):
 
 def setup(con):
     cur = con.cursor()
-    cur.execute("""CREATE TABLE IF NOT EXISTS auth(userid, code, voted, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)""")
+    cur.execute(
+        """CREATE TABLE IF NOT EXISTS auth(userid, code, voted, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)""")
     cur.execute("""CREATE TABLE IF NOT EXISTS votes(vote, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL)""")
     cur.execute("""CREATE TABLE IF NOT EXISTS candidates(id, displayname)""")
     cur.execute("""CREATE TABLE IF NOT EXISTS admins(username, password_hash)""")
@@ -241,3 +242,16 @@ def verify_session(con, session):
         return results[0][1]
     except IndexError:
         return None
+
+
+def logout_session(con, session):
+    cur = con.cursor()
+    cur.execute("DELETE FROM sessions WHERE session = ?", (session,))
+    clean_sessions(con)
+    con.commit()
+
+
+def clean_sessions(con):
+    cur = con.cursor()
+    cur.execute("DELETE FROM sessions WHERE expiration < ?", (time.time(),))
+    con.commit()

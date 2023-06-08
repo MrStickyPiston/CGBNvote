@@ -73,7 +73,7 @@ Je authenticatiecode voor CGBNvote is {code[0]}.\nDeze code vervalt over {durati
     server.close()
 
 
-def admin_panel(user):
+def admin_panel_html(user):
     con = lib.database.connect("database.db")
 
     candidates = lib.database.get_candidates(con)
@@ -83,31 +83,41 @@ def admin_panel(user):
     payload = {
         "candidates": str(candidates),
         "settings": str(settings),
-        "username": user,
-        "password": "session"
+        "username": user
     }
     return template("admin_panel", payload)
 
 
-@get('/vote-admin')
-def vote_admin_login():
+@get('/admin-panel')
+def admin_panel():
     con = lib.database.connect("database.db")
-
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
 
     if user is not None:
-        return admin_panel(user)
+        return admin_panel_html(user)
+    else:
+        redirect('/admin-login')
+
+
+@get('/admin-login')
+def vote_admin_login():
+    con = lib.database.connect("database.db")
+    user = lib.database.verify_session(con, request.get_cookie("SESSION"))
+
+    if user is not None:
+        redirect('/admin-panel')
+        return
 
     return template("admin_login", {"script": ""})
 
 
-@post('/vote-admin')
+@post('/admin-login')
 def vote_admin_panel():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
 
     if user is not None:
-        redirect('/vote-admin')
+        redirect('/admin-panel')
         return
 
     con.commit()
@@ -115,28 +125,30 @@ def vote_admin_panel():
     user = request.forms.get('user')
     password = request.forms.get('password')
 
+    print("Verifying admin")
     succes = lib.database.verify_admins(con, user, password)
     con.commit()
 
     if succes:
-        print(f"Successful login attempt at /vote-admin by {user}")
+        print(f"Successful login attempt at /admin-login by {user}")
 
         session = lib.encryption.generate_session()
 
         lib.database.set_session(con, session, user)
-        response.set_cookie("SESSION", session, path='/', max_age=60*10)
+        response.set_cookie("SESSION", session, path='/', samesite=None, max_age=60 * 10)
         con.close()
 
-        return admin_panel(user)
+        redirect('/admin-panel')
+        return
 
     else:
-        print(f"Failed login attempt at /vote-admin by {user}")
+        print(f"Failed login attempt at /admin-login by {user}")
         con.close()
         return template("admin_login", {
             "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
 
 
-@post('/vote-admin/process')
+@post('/admin-panel/process')
 def process_changes():
     username = request.forms.get('username')
     con = lib.database.connect("database.db")
@@ -145,7 +157,7 @@ def process_changes():
         candidates = literal_eval(request.forms.get('candidate_list'))
         settings = literal_eval(request.forms.get('setting_list'))
 
-        print(f"Successful login attempt at /vote-admin/process by {username}")
+        print(f"Successful login attempt at /admin-panel/process by {username}")
         print(f"""Updating the changes from the admin dashboard:\ncandidates:\t{candidates}\nsettings:\t{settings}""")
 
         lib.database.set_candidates(con, candidates)
@@ -154,38 +166,38 @@ def process_changes():
         return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
 
     else:
-        print(f"Failed login attempt at /vote-admin/process by {username}")
+        print(f"Failed login attempt at /admin-panel/process by {username}")
         con.commit()
         return template("script", {
             "script": "alert('Uw sessie id klopt niet. Probeer opnieuw in te loggen.'); history.back()"})
 
 
-@post('/vote-admin/reset_auth')
+@post('/admin-panel/reset_auth')
 def reset_auth():
     user = request.query["user"]
     con = lib.database.connect("database.db")
 
     if user == lib.database.verify_session(con, request.get_cookie("SESSION")):
         lib.database.delete_codes(con)
-        print(f"Successful login attempt at /vote-admin/reset-auth by {user}")
+        print(f"Successful login attempt at /admin-panel/reset-auth by {user}")
         con.commit()
 
         return 'De wijzigingen zijn successvol verwerkt.'
     else:
-        print(f"Failed login attempt at /vote-admin/reset-auth by {user}")
+        print(f"Failed login attempt at /admin-panel/reset-auth by {user}")
         con.commit()
 
         return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
 
 
-@post('/vote-admin/reset_votes')
+@post('/admin-panel/reset_votes')
 def reset_auth():
     user = request.query["user"]
     con = lib.database.connect("database.db")
 
     if user == lib.database.verify_session(con, request.get_cookie("SESSION")):
         lib.database.delete_votes(con)
-        print(f"Successful login attempt at /vote-admin/reset_votes by {user}")
+        print(f"Successful login attempt at /admin-panel/reset_votes by {user}")
         try:
             os.remove(os.getcwd() + '/static/results.webp')
         except Exception:
@@ -194,9 +206,19 @@ def reset_auth():
         return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
 
     else:
-        print(f"Failed login attempt at /vote-admin/reset_votes by {user}")
+        print(f"Failed login attempt at /admin-panel/reset_votes by {user}")
         con.commit()
         return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
+
+
+@get('/admin-panel/log_out')
+def log_out():
+    con = lib.database.connect("database.db")
+    lib.database.logout_session(con, request.get_cookie("SESSION"))
+    con.commit()
+
+    response.set_cookie("SESSION", '', expires=0)
+    redirect("/admin-login")
 
 
 @get('/')

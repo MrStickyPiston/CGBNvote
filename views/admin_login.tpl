@@ -10,7 +10,7 @@
       </div>
     </div>
     <div id="iy8d-2" class="cards">
-      <form method="post" id="itxx7" action="/vote-admin">
+      <form method="post" id="itxx7" action="/admin-login">
         <fieldset id="ih2z2">
           <legend id="i9w0u">Gebruikersnaam</legend>
           <input type="text" id="user" name="user" required/>

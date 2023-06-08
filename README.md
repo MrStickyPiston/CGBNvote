@@ -37,5 +37,5 @@ To use https you need a certificate. You can create one yourself, but those self
 Once you got a certificate you upload the `.key` and the `.cert` to `./ssl/`. Then you add them to the `config.json` file.
 
 ### running the server
-Once you configurated your CGBNvote instance using the steps above, you can start the server by starting `server.py`. Navigate to the url that it gives you + `/vote-admin/` and edit the candidates to whatever you use the program for. Then change `"voting_enabled"` from 0 to 1 to enable voting.  
+Once you configurated your CGBNvote instance using the steps above, you can start the server by starting `server.py`. Navigate to the url that it gives you + `/admin-panel/` and edit the candidates to whatever you use the program for. Then change `"voting_enabled"` from 0 to 1 to enable voting.  
 If you want to get rid of the port, for example localhost:*8080* you have to run server.py as root / administrator. The program will automatically choose the right port for http/https. For http the standard port is `80`, for https `443`. If a webserver is ran on one of these ports, the webbrowser automatically adds it to the address, thus leaving no visible port.

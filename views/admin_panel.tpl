@@ -9,7 +9,11 @@
         <br/>
       </div>
       <div id="iy8d-2" class="cards">
-        <form method="post" id="itxx7" action="/vote-admin/process" enctype="multipart/form-data">
+        <form method="post" id="itxx7" action="/admin-panel/process" enctype="multipart/form-data">
+          <fieldset class="fieldset" id="account">
+            <legend class="text">Account</legend>
+            <button class="button" type=button onclick=log_out()>Uitloggen</button>
+          </fieldset>
           <fieldset class="fieldset">
             <legend class="text">Kandidatenlijst</legend>
             <p class="text">Vul in het eerste vak de partijnaam in. Vul in het tweede vak een unieke afkorting voor die partij in, die begrijpbaar is voor andere mensen. Dit wordt weergegeven in de uitslagen.</p>
@@ -32,6 +36,7 @@
             <div id="iy8oeq">
               <button type="button" class="button" onclick="save()">Opslaan</button>
               <div id=buffer></div>
+              <button type="button" class="button" onclick="reload()">Ongedaan maken</button>
               <input type="hidden" name="username" value={{username}}>
             </div>
           </fieldset>
@@ -292,6 +297,9 @@ function validateCandidateIds(arr){
 }
 
 function save(){
+  if (!confirm("Weet u zeker dat u uw wijzigingen wilt opslaan?")){
+    return
+  }
   candidates = get_candidates()
   update_editor(candidates)
   update_settings(get_settings())
@@ -302,18 +310,29 @@ function save(){
     document.getElementById("itxx7").submit();
   }
 }
+function reload(){
+    if (confirm("Weet u zeker dat u uw onopgeslagen wijzigingen ongedaan wilt maken?")){
+        location.reload()
+    }
+}
 update_editor({{!candidates}});
 update_settings({{!settings}});
 </script>
 <script>
 function reset_auth(){
-    fetch('/vote-admin/reset_auth?user={{username}}', {method: 'POST'})
+    fetch('/admin-panel/reset_auth?user={{username}}', {method: 'POST'})
       .then(response => response.text())
       .then(text => alert(text));
 };
 function reset_votes(){
-    fetch('/vote-admin/reset_votes?user={{username}}', {method: 'POST'})
+    fetch('/admin-panel/reset_votes?user={{username}}', {method: 'POST'})
       .then(response => response.text())
       .then(text => alert(text));
 };
+function log_out(){
+    console.log(`a`)
+    if (confirm("Weet u zeker dat u wilt uitloggen?")){
+        location.replace("/admin-panel/log_out")
+    }
+}
 </script>
