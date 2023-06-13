@@ -9,8 +9,10 @@
   "ssl_cert": "None",
 
   "url": input("Enter the server url: "),
+
   "mail": input("Enter server mail adress: "),
   "mail_password": input("Enter mail (app)password: "),
+  "mail_domain": "cgbn.nl",
 
   "workers_per_core": 2
 }

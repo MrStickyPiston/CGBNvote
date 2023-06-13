@@ -12,8 +12,10 @@ sslcontext = ssl.create_default_context()
 try:
     with open("config.json", 'r') as file:
         data = json.load(file)
+
         mailserver = data["mail"]
         mailserver_password = data["mail_password"]
+        mail_domain = data["mail_domain"]
 
         try:
             server = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=sslcontext)
@@ -243,7 +245,7 @@ def collect_vote():
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()
         return template("custom", {
-            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
+            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/results>hier</a> voor de resultaten."})
 
     payload = {
         "vote_name": lib.database.get_setting(con, "vote_name"),
@@ -260,7 +262,7 @@ def process_vote():
     if lib.database.get_setting(con, "voting_active") == "0":
         con.close()
         return template("custom", {
-            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/vote-results>hier</a> voor de resultaten."})
+            "content": "De verkiezingen zijn nu helaas niet actief. Kijk <a href=/results>hier</a> voor de resultaten."})
     con.close()
 
     userid = request.forms.get('user')
@@ -307,7 +309,7 @@ def send_code():
             con.close()
             return f"De verkiezingen zijn nu helaas niet actief. Kijk op {page_url}/vote_results voor de resultaten."
 
-        email = request.query["userid"] + "@cgbn.nl"
+        email = request.query["userid"] + "@" + mail_domain
         code = lib.database.generate_code(con, request.query["userid"])
 
         if code[1] == "alreadyVotedException":
