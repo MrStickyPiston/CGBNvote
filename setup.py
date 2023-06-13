@@ -3,6 +3,7 @@ import json
 import sys
 import os
 import math
+import secrets
 
 
 def header(message, char="=", charamount=-1, whitespace=0):
@@ -26,7 +27,7 @@ def install_packages():
 
 
 def generate_config():
-    config = eval(open("setup/templates/project_config.pyjson").read(), {'input': input, '__builtins__': None})
+    config = eval(open("setup/templates/project_config.pyjson").read(), {'input': input, '__builtins__': None, 'secrets': secrets})
     json_config = json.dumps(config, indent=4)
 
     with open("config.json", "w") as outfile:

@@ -14,5 +14,6 @@
   "mail_password": input("Enter mail (app)password: "),
   "mail_domain": "cgbn.nl",
 
-  "workers_per_core": 2
+  "workers_per_core": 2,
+  "key": secrets.token_hex(16)
 }
