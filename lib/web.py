@@ -174,7 +174,7 @@ def process_changes():
         print(f"Failed login attempt at /admin-panel/process by {username}")
         con.commit()
         return template("script", {
-            "script": "alert('Uw sessie id klopt niet. Probeer opnieuw in te loggen.'); history.back()"})
+            "script": "alert('Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'); history.back()"})
 
 
 @post('/admin-panel/reset_auth')
@@ -192,7 +192,7 @@ def reset_auth():
         print(f"Failed login attempt at /admin-panel/reset-auth by {user}")
         con.commit()
 
-        return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
+        return 'Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'
 
 
 @post('/admin-panel/reset_votes')
@@ -213,7 +213,7 @@ def reset_auth():
     else:
         print(f"Failed login attempt at /admin-panel/reset_votes by {user}")
         con.commit()
-        return 'Uw sessie id klopt niet. Probeer opnieuw in te loggen'
+        return 'Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'
 
 
 @get('/admin-panel/log_out')

@@ -9,9 +9,10 @@
         <br/>
       </div>
       <div id="iy8d-2" class="cards">
-        <form method="post" id="itxx7" action="/admin-panel/process" enctype="multipart/form-data">
+        <form method="post" id="itxx7" action="/admin-panel/process" enctype="multipart/form-data" onchange="updateOldForm()">
           <fieldset class="fieldset" id="account">
             <legend class="text">Account</legend>
+            <button class="button" type=button onclick=renew_session()>Sessie vernieuwen</button>
             <button class="button" type=button onclick=log_out()>Uitloggen</button>
           </fieldset>
           <fieldset class="fieldset">
@@ -123,10 +124,12 @@
     color:#ffffff;
   }
   .button{
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     border-radius:5px 5px 5px 5px;
     opacity:1;
     border:0px solid white;
     padding:0px 2.5px 0px 2.5px;
+    margin: 0 0 5 0;
     height:30px;
     background-repeat:repeat;
     background-position:left top;
@@ -135,6 +138,9 @@
     background-image:linear-gradient(#ffffff 0%, #ffffff 100%);
     width:100%;
     display:block;
+  }
+  .button:hover{
+    box-shadow: 0 6px 8px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
   }
   #password{
     border-radius:5px 5px 5px 5px;
@@ -218,6 +224,11 @@ p.text{
 }
 </style>
 <script type="text/javascript">
+ updateOldForm = () => {
+        oldForm = document
+            .getElementById('itxx7').value;
+}
+
   function update_editor(candidates){
 
   headerHTML = `<input type="hidden" name="candidate_list" value='${JSON.stringify(candidates)}'>`;
@@ -237,6 +248,7 @@ p.text{
     </div>`;
   }
   document.getElementById('candidates').innerHTML = headerHTML + candidatesHTML + footerHTML;
+  updateOldForm()
 }
 
 function get_candidates(){
@@ -275,6 +287,7 @@ function update_settings(settings){
         </div>`;
     }
     document.getElementById('settings').innerHTML = headerHTML + settingsHTML + footerHTML;
+    updateOldForm()
 }
 
 function get_settings(){
@@ -315,8 +328,10 @@ function reload(){
         location.reload()
     }
 }
+
 update_editor({{!candidates}});
 update_settings({{!settings}});
+
 </script>
 <script>
 function reset_auth(){
@@ -330,9 +345,28 @@ function reset_votes(){
       .then(text => alert(text));
 };
 function log_out(){
-    console.log(`a`)
     if (confirm("Weet u zeker dat u wilt uitloggen?")){
         location.replace("/admin-panel/log_out")
     }
 }
+function renew_session(){
+    if (oldForm !== ''){
+        window.open('/admin-login')
+    } else {
+        location.href = "/admin-login"
+    }
+}
+</script>
+<script>
+let oldForm = '';
+
+ window.addEventListener('beforeunload',
+    function (e) {
+
+        if (oldForm !== '') {
+
+        e.preventDefault();
+    e.returnValue = '';
+        }
+    });
 </script>
