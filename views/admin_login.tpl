@@ -19,6 +19,7 @@
           <legend id="i0b1u">Wachtwoord</legend>
           <input type="password" id="imzij" name="password" required/>
         </fieldset>
+        <input type="hidden" id="closetab" name="closetab" value={{closetab}}>
         <button type="submit" id="ifdlg">log in</button>
         <div id="i2qefk">
         </div>

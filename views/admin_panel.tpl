@@ -224,6 +224,15 @@ p.text{
 }
 </style>
 <script type="text/javascript">
+
+async function check_auth(){
+    response = await fetch('/admin-panel/check_auth?user={{username}}', {method: 'POST'})
+    let status = await response.status
+    console.log(status)
+    return status == 200
+}
+
+
  updateOldForm = () => {
         oldForm = document
             .getElementById('itxx7').value;
@@ -309,8 +318,14 @@ function validateCandidateIds(arr){
   return new Set(result).size == result.length
 }
 
-function save(){
+async function save(){
+  auth = await check_auth()
+  console.log(auth)
+
   if (!confirm("Weet u zeker dat u uw wijzigingen wilt opslaan?")){
+    return
+  } else if (!auth){
+    alert("Uw sessie is verlopen. Klik bovenaan het admin panel op \"Sessie vernieuwen\"")
     return
   }
   candidates = get_candidates()
@@ -320,6 +335,7 @@ function save(){
   if (!validateCandidateIds(candidates)){
     alert("Een id mag niet meer dan een keer voorkomen.")
   } else{
+    oldForm = '';
     document.getElementById("itxx7").submit();
   }
 }
@@ -351,7 +367,7 @@ function log_out(){
 }
 function renew_session(){
     if (oldForm !== ''){
-        window.open('/admin-login')
+        window.open('/admin-login?close=1')
     } else {
         location.href = "/admin-login"
     }

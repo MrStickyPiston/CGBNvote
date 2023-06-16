@@ -113,13 +113,16 @@ def vote_admin_login():
         redirect('/admin-panel')
         return
 
-    return template("admin_login", {"script": ""})
+    return template("admin_login", {"script": "", "closetab": request.params.get('close')})
 
 
 @post('/admin-login')
 def vote_admin_panel():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
+
+    if request.forms.get('closetab') == "1":
+        return template("script", {"script": "window.close();"})
 
     if user is not None:
         redirect('/admin-panel')
@@ -168,7 +171,7 @@ def process_changes():
         lib.database.set_candidates(con, candidates)
         lib.database.set_settings(con, settings)
         con.commit()
-        return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); history.back()"})
+        return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); location.href = '/admin-login'"})
 
     else:
         print(f"Failed login attempt at /admin-panel/process by {username}")
@@ -193,6 +196,21 @@ def reset_auth():
         con.commit()
 
         return 'Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'
+
+
+@post('/admin-panel/check_auth')
+def check_auth():
+    user = request.query["user"]
+    con = lib.database.connect("database.db")
+
+    if user == lib.database.verify_session(con, request.get_cookie("SESSION")):
+        con.commit()
+        response.status = 200
+        return
+    else:
+        con.commit()
+        response.status = 401
+        return
 
 
 @post('/admin-panel/reset_votes')
