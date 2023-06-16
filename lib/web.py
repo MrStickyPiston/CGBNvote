@@ -110,6 +110,9 @@ def vote_admin_login():
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
 
     if user is not None:
+        if request.params.get('close') == "1":
+            return template("script", {"script": "window.close();"})
+
         redirect('/admin-panel')
         return
 
@@ -121,10 +124,10 @@ def vote_admin_panel():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
 
-    if request.forms.get('closetab') == "1":
-        return template("script", {"script": "window.close();"})
-
     if user is not None:
+        if request.forms.get('closetab') == "1":
+            return template("script", {"script": "window.close();"})
+
         redirect('/admin-panel')
         return
 
@@ -145,6 +148,9 @@ def vote_admin_panel():
         lib.database.set_session(con, session, user)
         response.set_cookie("SESSION", session, path='/', samesite=None, max_age=60 * 10)
         con.close()
+
+        if request.forms.get('closetab') == "1":
+            return template("script", {"script": "window.close();"})
 
         redirect('/admin-panel')
         return
