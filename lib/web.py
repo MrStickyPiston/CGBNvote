@@ -40,6 +40,23 @@ def error500(e):
     return template("custom", {"content": "500 internal server error. Neem contact op met de administrator."})
 
 
+# Redirects
+@get('/admin')
+@get('/vote-admin')
+def forward_admin():
+    redirect('/admin-login')
+
+
+@get('/vote')
+def forward_vote():
+    redirect('/')
+
+
+@get('/vote-results')
+def forward_results():
+    redirect('/results')
+
+
 @route('/static/<filename>')
 def static(filename):
     con = lib.database.connect("database.db")
@@ -177,7 +194,8 @@ def process_changes():
         lib.database.set_candidates(con, candidates)
         lib.database.set_settings(con, settings)
         con.commit()
-        return template("script", {"script": "alert('De wijzigingen zijn successvol verwerkt.'); location.href = '/admin-login'"})
+        return template("script",
+                        {"script": "alert('De wijzigingen zijn successvol verwerkt.'); location.href = '/admin-login'"})
 
     else:
         print(f"Failed login attempt at /admin-panel/process by {username}")
