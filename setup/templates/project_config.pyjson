@@ -8,10 +8,10 @@
   "ssl_key": "None",
   "ssl_cert": "None",
 
-  "url": input("Enter the server url: "),
+  "url": bottle.request.forms["server_url"],
 
-  "mail": input("Enter server mail adress: "),
-  "mail_password": input("Enter mail (app)password: "),
+  "mail": bottle.request.forms["mail"],
+  "mail_password": bottle.request.forms["mail_password"],
   "mail_domain": "cgbn.nl",
 
   "workers_per_core": 2,
