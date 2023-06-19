@@ -1,10 +1,15 @@
 # Using CGBNvote
 ### Requirements 
-CGBNvote has a few requirements:
- - Python 3.10 and above
- - 4gb ram
- - a not too old cpu. 
-Linux is recommended for hosting, Windows will work but its not really performant, and android is purely for dev **(NOT RECOMMENDED)**
+| Type               | Required                                                      | Recommended                                                     |
+|--------------------|---------------------------------------------------------------|-----------------------------------------------------------------|
+| Operating system   | Windows / Linux                                               | Linux                                                           |
+| Python             | [3.11](https://www.python.org/downloads/release/python-3110/) | [3.11.3](https://www.python.org/downloads/release/python-3113/) |
+| Storage space      | 2GB                                                           | 2GB                                                             |
+| total RAM memory   | 6GB                                                           | 8GB                                                             |
+| program RAM memory | 2GB                                                           | 4GB                                                             |
+| CPU speed          | 2.1 GHz                                                       | 3.6 GHz                                                         |
+| CPU cores          | 4                                                             | 8                                                               |
+| GPU                | Integrated                                                    | Integrated                                                      |
 
 ### Installation
 Run setup.py. A terminal will pop up. The installation script will ask for the following things:  
@@ -39,3 +44,4 @@ Once you got a certificate you upload the `.key` and the `.cert` to `./ssl/`. Th
 ### running the server
 Once you configurated your CGBNvote instance using the steps above, you can start the server by starting `server.py`. Navigate to the url that it gives you + `/admin-panel/` and edit the candidates to whatever you use the program for. Then change `"voting_enabled"` from 0 to 1 to enable voting.  
 If you want to get rid of the port, for example localhost:*8080* you have to run server.py as root / administrator. The program will automatically choose the right port for http/https. For http the standard port is `80`, for https `443`. If a webserver is ran on one of these ports, the webbrowser automatically adds it to the address, thus leaving no visible port.
+
