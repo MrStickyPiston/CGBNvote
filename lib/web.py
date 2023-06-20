@@ -176,7 +176,8 @@ def vote_admin_panel():
         print(f"Failed login attempt at /admin-login by {user}")
         con.close()
         return template("admin_login", {
-            "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()"})
+            "script": "alert('Het opegegeven wachtwoord komt niet overeen met de gebruikersnaam. Controleer of uw gegevens correct zijn.'); history.back()",
+            "closetab": 1})
 
 
 @post('/admin-panel/process')

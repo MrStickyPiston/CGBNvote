@@ -5,6 +5,7 @@ import subprocess
 import sys
 import threading
 import time
+import webbrowser
 
 server_thread = None
 
@@ -141,11 +142,15 @@ def start_server():
     close_thread = threading.Thread(target=close_current, daemon=True)
     close_thread.start()
 
-    return bottle.template("custom", {"content": "De server is opgestart. Klik <a href='/admin-panel'>hier</a> voor het admin-panel"})
+    return bottle.template("custom", {
+        "content": "De server is opgestart. Klik <a href='/admin-panel'>hier</a> voor het admin-panel"})
 
+
+webbrowser.open("http://127.0.0.1:8080")
 
 server = CloseAbleServer()
 bottle.run(server=server)
 
 import server
+
 server.main()
