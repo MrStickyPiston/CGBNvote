@@ -1,6 +1,6 @@
 import sqlite3, secrets, string, time, json
 
-import lib
+import lib.encryption
 
 
 def to_list(tupl):

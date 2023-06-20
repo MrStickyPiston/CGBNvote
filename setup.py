@@ -1,9 +1,12 @@
 import json
+import os
 import secrets
 import subprocess
 import sys
+import threading
+import time
 
-import lib
+server_thread = None
 
 
 def install_packages():
@@ -19,6 +22,7 @@ def install_packages():
 
 
 def generate_database():
+    import lib.database
     def check_password(password):
         SpecialSym = """!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"""
         valid = True
@@ -83,6 +87,24 @@ if __name__ == "__main__":
 import bottle
 
 
+class CloseAbleServer(bottle.ServerAdapter):
+    server = None
+
+    def run(self, handler):
+        from wsgiref.simple_server import make_server, WSGIRequestHandler
+        if self.quiet:
+            class QuietHandler(WSGIRequestHandler):
+                def log_request(*args, **kw): pass
+
+            self.options['handler_class'] = QuietHandler
+        self.server = make_server(self.host, self.port, handler, **self.options)
+        self.server.serve_forever()
+
+    def stop(self):
+        print("stopped setup server")
+        self.server.shutdown()
+
+
 @bottle.get('/')
 def setup_form():
     return bottle.template("setup_form")
@@ -102,11 +124,28 @@ def setup_form():
         os.mkdir(os.getcwd() + "/static/")
         print("Created folder /static/")
     except FileExistsError:
-        print("ERROR: folder /static/ already exists")
+        pass
 
-    subprocess.Popen([sys.executable, "server.py"])
+    return bottle.template("setup_base", {
+        "content": "Uw wijzigingen zijn verwerkt. </br>"
+                   "<button class='button' id='iidnf' onclick=\"window.location.href = '/start-server';\"> start server</button>"
+                   "<style></style>"})
 
-    return bottle.template("custom", {"content": "NOTE: Voting is disabled now, but you can enable it on the <a href='/admin-panel'>admin panel</a>. The candidates of 2023 are already set, but if you need other candidates you can set them there. Also dont forget to remove the disclaimer."})
+
+@bottle.get('/start-server')
+def start_server():
+    def close_current():
+        time.sleep(5)
+        server.stop()
+
+    close_thread = threading.Thread(target=close_current, daemon=True)
+    close_thread.start()
+
+    return bottle.template("custom", {"content": "De server is opgestart. Klik <a href='/admin-panel'>hier</a> voor het admin-panel"})
 
 
-bottle.run()
+server = CloseAbleServer()
+bottle.run(server=server)
+
+import server
+server.main()

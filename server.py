@@ -1,11 +1,12 @@
 import lib
 import json, ctypes, os
+
 try:
     is_admin = os.getuid() == 0
 except AttributeError:
     is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
 
-os.system('cls' if os.name=='nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear')
 
 try:
     with open("config.json", 'r') as file:
@@ -27,7 +28,8 @@ try:
 except Exception:
     exit("Incorrect config file")
 
-if __name__ == '__main__':
+
+def main():
     # Decide which server to use
     if os.name == 'nt':
         print(f"""
@@ -66,3 +68,7 @@ if __name__ == '__main__':
         print("""| Mode:     http                                             |
 +------------------------------------------------------------+""")
         lib.web.serve_http(host, port, server, workers)
+
+
+if __name__ == '__main__':
+    main()
