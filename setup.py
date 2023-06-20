@@ -7,7 +7,7 @@ import threading
 import time
 import webbrowser
 
-server_thread = None
+global _start_server
 
 
 def install_packages():
@@ -128,8 +128,8 @@ def setup_form():
         pass
 
     return bottle.template("setup_base", {
-        "content": "Uw wijzigingen zijn verwerkt. </br>"
-                   "<button class='button' id='iidnf' onclick=\"window.location.href = '/start-server';\"> start server</button>"
+        "content": "<p class=text>Uw wijzigingen zijn verwerkt.</p></br>"
+                   "<button class='button' id='iidnf' onclick=\"window.location.href = '/start-server';\">start server</button>"
                    "<style></style>"})
 
 
@@ -142,6 +142,9 @@ def start_server():
     close_thread = threading.Thread(target=close_current, daemon=True)
     close_thread.start()
 
+    global _start_server
+    _start_server = True
+
     return bottle.template("custom", {
         "content": "De server is opgestart. Klik <a href='/admin-panel'>hier</a> voor het admin-panel"})
 
@@ -151,6 +154,7 @@ webbrowser.open("http://127.0.0.1:8080")
 server = CloseAbleServer()
 bottle.run(server=server)
 
-import server
+if _start_server:
+    import server
 
-server.main()
+    server.main()

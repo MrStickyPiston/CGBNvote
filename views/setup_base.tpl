@@ -12,12 +12,14 @@
     <div class="container-width">
       <div id="iwjse" class="flex-title">CGBNvote
       </div>
+      <div id="itxx7">
       <div id="ijdug" class="flex-desc">{{!content}}
-      </div>
+      </div></div>
     </div>
   </section>
 </body>
-<style>* {
+<style>
+  * {
   box-sizing: border-box;
   }
   body {
@@ -27,6 +29,9 @@
     align:center;
     flex-direction:column;
     display:flex;
+  }
+  .text{
+  color:ffffff;
   }
   *{
     box-sizing:border-box;
@@ -53,6 +58,9 @@
     width:90%;
     max-width:1150px;
     margin:0 auto;
+    flex-flow: column;
+    display: flex;
+    align-items: center;
   }
   .flex-sect{
     background-color:#fafafa;
@@ -85,7 +93,6 @@
     padding:50px 0px 50px 0px;
   }
   .button{
-    box-shadow:0 3px 4px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     border-radius:5px 5px 5px 5px;
     opacity:1;
     border:0px solid white;
@@ -101,16 +108,36 @@
     display:block;
   }
   .button:hover{
-    box-shadow:0 6px 8px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    box-shadow:0 6px 8px 0 rgba(0,0,0,0.24), 0 10px 20px 0 rgba(0,0,0,0.19);
   }
   #iidnf{
     align-self:center;
     flex-direction:row;
     margin:10px 0px 5px 0px;
+    width: 80%;
   }
   @media (max-width: 992px){
     #ih3qc{
       padding:50px 0px 50px 0px;
     }
   }
+  #itxx7{
+    display:flex;
+    flex-direction:column;
+    background-repeat:repeat;
+    background-position:left top;
+    background-attachment:scroll;
+    background-size:auto;
+    background-image:linear-gradient(to right, #bf387e 0%, #cd5e5e 100%);
+    padding:10px 10px 10px 10px;
+    box-shadow:0 0 5px 0 black;
+    opacity:0.86;
+    border-radius:5px 5px 5px 5px;
+    margin:0 10 0 10;
+    max-width:400px;
+    min-width:300px;
+    width:25%;
+    max-height: 150px;
+  }
+
 </style>
