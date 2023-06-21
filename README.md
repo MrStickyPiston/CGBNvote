@@ -1,5 +1,5 @@
 # Using CGBNvote
-### Requirements 
+### Requirements
 | Type               | Required                                                      | Recommended                                                     |
 |--------------------|---------------------------------------------------------------|-----------------------------------------------------------------|
 | Operating system   | Windows / Linux                                               | Linux                                                           |
