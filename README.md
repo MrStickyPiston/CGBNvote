@@ -10,7 +10,8 @@
 | CPU speed          | 2.1 GHz                                                       | 3.6 GHz                                                         |
 | CPU cores          | 4                                                             | 8                                                               |
 | GPU                | Integrated                                                    | Integrated                                                      |
-
+### Download
+Install git and run `git clone https://github.com/MrStickyPiston/CGBNvote.git && cd CGBNvote` in the batch shell or click [here](https://github.com/MrStickyPiston/CGBNvote/archive/refs/heads/master.zip) to download as zip and unzip.
 ### Installation
 Run setup.py. A terminal will pop up. The installation script will ask for the following things:  
 
