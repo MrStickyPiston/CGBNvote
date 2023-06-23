@@ -5,9 +5,8 @@
   </header>
   <section id="iq09n-2" class="flex-sect">
     <div id="iq7l-2" class="container-width">
-      <div id="ibn2g-2" class="flex-title">CGBNvote {{vote_name}}
+      <div id="ibn2g-2" class="flex-title">{{vote_name}}
       </div>
-      <!-- <div id="iprpw-2" class="flex-desc">Stem hier voor de CGBNvote {{vote_name}}. <br/> -->
       </div>
       <div id="iy8d-2" class="cards">
         <form method="post" id="itxx7" action="/">
