@@ -11,9 +11,9 @@ global _start_server
 
 """Checks if the correct python interpreter is being used.
 Format: 3.11.3 = 3011003"""
-version = sys.version_info.major*1000000+sys.version_info.minor*1000+sys.version_info.micro
+version = sys.version_info.major * 1000000 + sys.version_info.minor * 1000 + sys.version_info.micro
 
-if not sys.maxsize > 2**32:
+if not sys.maxsize > 2 ** 32:
     exit("Invalid python interpreter: use 64 bit python instead.")
 elif version < 3011000:
     exit(f"Invalid python version: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
@@ -33,7 +33,7 @@ def install_packages():
 
 
 def generate_database():
-    import lib.database
+    from lib import database
     def check_password(password):
         SpecialSym = """!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"""
         valid = True
@@ -64,21 +64,21 @@ def generate_database():
         else:
             return [valid, problems[:-1]]
 
-    con = lib.database.connect("database.db")
-    lib.database.setup(con)
+    con = database.connect("database.db")
+    database.setup(con)
 
     candidates = eval(open("setup/templates/candidates.list").read(), {'__builtins__': None})
     db_config = eval(open("setup/templates/settings.list").read(), {'__builtins__': None})
 
-    lib.database.set_candidates(con, candidates)
+    database.set_candidates(con, candidates)
 
     password = bottle.request.forms["password"]
     validation = check_password(password)
     if not validation[0]:
         return bottle.template("script", {"script": f"alert('Incorrect password: {validation[1]}'); history.back()"})
 
-    lib.database.set_admins(con, [(bottle.request.forms["user"], password)])
-    lib.database.set_settings(con, db_config)
+    database.set_admins(con, [(bottle.request.forms["user"], password)])
+    database.set_settings(con, db_config)
     con.close()
 
 
@@ -137,10 +137,27 @@ def setup_form():
     except FileExistsError:
         pass
 
-    return bottle.template("setup_base", {
-        "content": "<p class=text>Uw wijzigingen zijn verwerkt.</p></br>"
-                   "<button class='button' id='iidnf' onclick=\"window.location.href = '/start-server';\">start server</button>"
-                   "<style></style>"})
+    if os.name == "nt":
+        startup = "<p class=text>Uw wijzigingen zijn verwerkt.</p>" \
+                  "</br><button class='button' id='iidnf' onclick=\"window.location.href = '/start-server';\">" \
+                  "start server</button>"
+    else:
+        startup = "<p class=text>Uw wijzigingen zijn verwerkt. " \
+                  "Start de server en klik daarna hieronder voor het admin panel</p>" \
+                  "</br><button class='button' id='iidnf' onclick=\"window.location.href = '/admin-panel';\">Admin " \
+                  "panel</button>"
+
+        global _start_server
+        _start_server = False
+
+        def close_current():
+            time.sleep(5)
+            server.stop()
+
+        close_thread = threading.Thread(target=close_current, daemon=True)
+        close_thread.start()
+
+    return bottle.template("setup_base", {"content": f"{startup}"})
 
 
 @bottle.get('/start-server')
@@ -165,6 +182,7 @@ server = CloseAbleServer()
 bottle.run(server=server)
 
 if _start_server:
+    print("Starting server")
     import server
 
     server.main()

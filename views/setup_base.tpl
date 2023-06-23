@@ -76,7 +76,6 @@
     padding:5px;
   }
   .flex-desc{
-    margin-bottom:55px;
     font-size:1em;
     color:rgba(0, 0, 0, 0.5);
     text-align:center;
@@ -137,7 +136,7 @@
     max-width:400px;
     min-width:300px;
     width:25%;
-    max-height: 150px;
+    max-height: fit-content;
   }
 
 </style>
