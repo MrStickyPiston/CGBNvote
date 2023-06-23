@@ -33,7 +33,6 @@ except Exception:
 """Checks if the correct python interpreter is being used.
 Format: 3.11.3 = 3011003"""
 version = sys.version_info.major*1000000+sys.version_info.minor*1000+sys.version_info.micro
-print(version)
 
 if not sys.maxsize > 2**32:
     exit("Invalid python interpreter: use 64 bit python instead.")
