@@ -25,7 +25,21 @@ try:
         except Exception:
             print("ERROR: incorrect mail credentials")
             disable_mail = True
+
         page_url = data["url"]
+
+        if not page_url.startswith('http://') and not page_url.startswith('https://'):
+            if data['ssl_key'] != "None" and data['ssl_cert'] != "None":
+                page_url = "https://" + page_url
+            else:
+                page_url = "http://" + page_url
+
+        if not data["use_domain"] and not page_url.endswith(f":{data['port']}") and not page_url.endswith(f":{data['ssl_port']}"):
+            if data['ssl_key'] != "None" and data['ssl_cert'] != "None":
+                page_url = page_url + f":{data['ssl_port']}"
+            else:
+                page_url = page_url + f":{data['port']}"
+
 except Exception:
     exit("Incorrect config file")
 
@@ -391,6 +405,8 @@ def serve_bottle(host, port):
 
 
 def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
+    print(f"Running server on {page_url}")
+
     if server_adapter == 'gunicorn':
         run(
             host=host,
@@ -417,6 +433,7 @@ def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
 def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key='ssl/server.key',
                 ssl_cert='ssl/server.crt'):
     sslcontext.load_default_certs()
+    print(f"Running server on {page_url}")
 
     if server_adapter == 'gunicorn':
         run(

@@ -7,6 +7,7 @@
   "ssl_admin_port": "443",
   "ssl_key": "None",
   "ssl_cert": "None",
+  "use_domain": false,
 
   "url": bottle.request.forms["server_url"],
 
