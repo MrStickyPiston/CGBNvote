@@ -3,6 +3,7 @@
 | Type               | Required                                                      | Recommended                                                     |
 |--------------------|---------------------------------------------------------------|-----------------------------------------------------------------|
 | Operating system   | Windows / Linux                                               | Linux                                                           |
+| Wi-Fi              | wireless / wired                                              | wired                                                           |
 | Python             | [3.11](https://www.python.org/downloads/release/python-3110/) | [3.11.3](https://www.python.org/downloads/release/python-3113/) |
 | Storage space      | 2GB                                                           | 2GB                                                             |
 | total RAM memory   | 6GB                                                           | 8GB                                                             |
