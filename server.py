@@ -1,7 +1,10 @@
+import ctypes
+import json
+import os
+import socket
 import sys
 
 import lib
-import json, ctypes, os
 
 try:
     is_admin = os.getuid() == 0
@@ -9,6 +12,14 @@ except AttributeError:
     is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 os.system('cls' if os.name == 'nt' else 'clear')
+
+# Ping google to check for internet
+try:
+    socket.setdefaulttimeout(3)
+    socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+except socket.error as e:
+    print(e)
+    exit("No Wi-Fi acces available. Check your connection or try wired internet.")
 
 try:
     with open("config.json", 'r') as file:
