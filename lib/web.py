@@ -405,7 +405,6 @@ def serve_bottle(host, port):
 
 
 def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
-    print(f"Running server on {page_url}")
 
     if server_adapter == 'gunicorn':
         run(
@@ -433,7 +432,6 @@ def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
 def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key='ssl/server.key',
                 ssl_cert='ssl/server.crt'):
     sslcontext.load_default_certs()
-    print(f"Running server on {page_url}")
 
     if server_adapter == 'gunicorn':
         run(
