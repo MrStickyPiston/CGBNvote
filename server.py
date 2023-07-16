@@ -115,7 +115,7 @@ def main():
         operating_system = "Linux (Recommended)"
 
     info.add("Host OS", operating_system)
-    info.add("Server", f"{server} ({threads} thread)")
+    info.add("Server", f"{server} ({threads} threads)")
 
     info.add("Connections")
     info.add("Hosting on", f"{protocol}://{host}:{port}")
