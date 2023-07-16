@@ -76,7 +76,7 @@ class ServerInfo:
         if len(self.info[-1]) > self.width:
             self.width = len(self.info[-1])
 
-    def render(self, corner="+", top="-", bottom="-", side="|"):
+    def render(self, corner="┼", top="─", bottom="─", side="│"):
         render = f"{corner}{top * (math.floor(0.5 * (self.width - len(self.title) + 2 + self.space)) - 1)}" \
                  f" {self.title} " \
                  f"{top * (math.ceil(0.5 * (self.width - len(self.title) + 2 + self.space)) - 1)}{corner}\n"
@@ -90,7 +90,7 @@ class ServerInfo:
 
 
 def main():
-    info = ServerInfo("CGBNvote")
+    info = ServerInfo("CGBNvote", 10)
 
     if os.name == 'nt':
         server = 'waitress'
@@ -117,6 +117,7 @@ def main():
     info.add("Host OS", operating_system)
     info.add("Server", f"{server} ({threads} threads)")
 
+    info.add("")
     info.add("Connections")
     info.add("Hosting on", f"{protocol}://{host}:{port}")
     info.add("LAN", f"{protocol}://{internal_ip}:{port}")
