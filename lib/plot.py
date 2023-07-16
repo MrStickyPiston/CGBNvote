@@ -1,7 +1,12 @@
-import sqlite3
+import sys
+
 import matplotlib.pyplot as plt
 
-import lib.database
+try:
+    import lib.database
+except ModuleNotFoundError:
+    sys.path.append(sys.argv[1])
+    import lib.database
 
 
 def plot_votes(con):

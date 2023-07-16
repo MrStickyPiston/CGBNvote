@@ -390,7 +390,7 @@ def vote_results():
     if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
     else:
-        subprocess.check_call([sys.executable, "lib/plot.py"])
+        subprocess.check_call([sys.executable, "lib/plot.py", os.getcwd()])
 
     con.commit()
     return template("custom", {"content": results})
