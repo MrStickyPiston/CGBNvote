@@ -39,6 +39,9 @@ try:
         ssl_key = data["ssl_key"]
         ssl_cert = data["ssl_cert"]
 
+        server_email = data["mail"]
+        mail_domain = data["mail_domain"]
+
         threads = data["workers_per_core"] * os.cpu_count()
 
 except Exception:
@@ -67,30 +70,59 @@ class ServerInfo:
         self.width = width
         self.info = []
 
-    def add(self, name, value=None):
+    def text(self, id, value=None):
         if value is None:
-            self.info.append(f"{name}")
+            self.info.append(f"{id}")
         else:
-            self.info.append(f"{name}: {value}")
+            self.info.append(f"{id}: {value}")
 
         if len(self.info[-1]) > self.width:
             self.width = len(self.info[-1])
 
-    def render(self, corner="┼", top="─", bottom="─", side="│"):
-        render = f"{corner}{top * (math.floor(0.5 * (self.width - len(self.title) + 2 + self.space)) - 1)}" \
+    def section(self, name="None", space=True):
+        self.info.append(f"NEW_SECTION:{name}:{space}")
+
+    def render(self,
+               left_top="┌",
+               top="─",
+               right_top="┐",
+               left_bottom="└",
+               bottom="─",
+               right_bottom="┘",
+               side="│",
+               left_seperator="├",
+               seperator="─",
+               right_seperator="┤"):
+        render = f"{left_top}{top * (math.floor(0.2 * (self.width + 2 + self.space)) - 1)}" \
                  f" {self.title} " \
-                 f"{top * (math.ceil(0.5 * (self.width - len(self.title) + 2 + self.space)) - 1)}{corner}\n"
+                 f"{top * (math.ceil(0.8 * (self.width + 2 + self.space)) - 1 - len(self.title))}{right_top}\n"
 
         for i in self.info:
-            render += f"{side} {i}{' ' * (self.width - len(i) + self.space)} {side}\n"
+            if i.startswith("NEW_SECTION:"):
+                title = i.split(':')[1]
 
-        render += f"{corner}{bottom * (self.width + 2 + self.space)}{corner}\n"
+                if i.split(':')[2] == "True":
+                    render += f"{side} {' ' * (self.width + self.space)} {side}\n"
+
+                if title != "None":
+                    render += \
+                        f"{left_seperator}{seperator * (math.floor(0.2 * (self.width + 2 + self.space)) - 1)}" \
+                        f" {title} " \
+                        f"{top * (math.ceil(0.8 * (self.width + 2 + self.space)) - 1 - len(title))}{right_seperator}\n"
+                else:
+                    render += f"{left_seperator}{seperator * (self.width + self.space + 2)}{right_seperator}\n"
+
+            else:
+                render += f"{side} {i}{' ' * (self.width - len(i) + self.space)} {side}\n"
+
+        render += f"{side} {' ' * (self.width + self.space)} {side}\n"
+        render += f"{left_bottom}{bottom * (self.width + 2 + self.space)}{right_bottom}\n"
 
         return render
 
 
 def main():
-    info = ServerInfo("CGBNvote", 10)
+    info = ServerInfo("CGBNvote server info", 10, 60)
 
     if os.name == 'nt':
         server = 'waitress'
@@ -99,12 +131,12 @@ def main():
     elif 'ANDROID_BOOTLOGO' in os.environ:
         server = 'bottle'
 
-        info.add("Host OS", "Android (NOT RECOMMENDED)")
-        info.add("Server", f"{server} ({1} thread)")
-        info.add("Host ip", f"{host}:{port}")
-        info.add("")
-        info.add("Only do this if you know what you are doing")
-        info.add("YOU WILL NOT RECEIVE ANY SUPPORT.")
+        info.text("Host OS", "Android (NOT RECOMMENDED)")
+        info.text("Server", f"{server} ({1} thread)")
+        info.text("Host ip", f"{host}:{port}")
+        info.text("")
+        info.text("Only do this if you know what you are doing")
+        info.text("YOU WILL NOT RECEIVE ANY SUPPORT.")
 
         print(info.render())
         lib.web.serve_bottle(host, port)
@@ -114,14 +146,21 @@ def main():
         server = 'gunicorn'
         operating_system = "Linux (Recommended)"
 
-    info.add("Host OS", operating_system)
-    info.add("Server", f"{server} ({threads} threads)")
+    info.text("OS", operating_system)
+    info.text("Server", f"{server} ({threads} threads)")
 
-    info.add("")
-    info.add("Connections")
-    info.add("Hosting on", f"{protocol}://{host}:{port}")
-    info.add("LAN", f"{protocol}://{internal_ip}:{port}")
-    info.add("Public", f"{protocol}://{external_ip}:{port}")
+    info.section("Connections")
+    info.text("Protocol", protocol)
+    info.text("Host", host)
+    info.text("Port", port)
+    info.text("")
+    info.text("LAN", f"{protocol}://{internal_ip}:{port}")
+    info.text("Public", f"{protocol}://{external_ip}:{port}")
+
+    info.section("Mail")
+    info.text("Server email", server_email)
+    info.text("Server email authenticated", not lib.web.disable_mail)
+    info.text("User mail extension", f"@{mail_domain}")
 
     print(info.render())
 
