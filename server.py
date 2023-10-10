@@ -25,7 +25,7 @@ try:
         ssl_key = data["ssl_key"]
         ssl_cert = data["ssl_cert"]
 
-        workers = data["workers_per_core"] * os.cpu_count()
+        workers = data["workers_per_core"] * os.cpu_count() + 1
 
 except Exception:
     exit("Incorrect config file")

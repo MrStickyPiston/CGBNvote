@@ -1,16 +1,31 @@
 # Using CGBNvote
 ### Requirements
-| Type               | Required                                                      | Recommended                                                     |
-|--------------------|---------------------------------------------------------------|-----------------------------------------------------------------|
-| Operating system   | Windows / Linux                                               | Linux                                                           |
-| Wi-Fi              | wireless / wired                                              | wired                                                           |
-| Python             | [3.11](https://www.python.org/downloads/release/python-3110/) | [3.11.3](https://www.python.org/downloads/release/python-3113/) |
-| Storage space      | 2GB                                                           | 2GB                                                             |
-| total RAM memory   | 6GB                                                           | 8GB                                                             |
-| program RAM memory | 2GB                                                           | 4GB                                                             |
-| CPU speed          | 2.1 GHz                                                       | 3.6 GHz                                                         |
-| CPU cores          | 4                                                             | 8                                                               |
-| GPU                | Integrated                                                    | Integrated                                                      |
+Linux is recommended over windows as it gives a better performance/resource.
+
+## Linux
+| Type          | Required                                                      | Recommended                                                     |
+|---------------|---------------------------------------------------------------|-----------------------------------------------------------------|
+| Wi-Fi         | any                                                           | wired                                                           |
+| Python        | [3.11](https://www.python.org/downloads/release/python-3110/) | [3.11.6](https://www.python.org/downloads/release/python-3116/) |
+| Storage space | 256mb                                                         | 256mb                                                           |
+| total RAM     | 2GB                                                           | 3GB                                                             |
+| program RAM   | 1GB                                                           | 2GB                                                             |
+| CPU speed     | 2.1 GHz                                                       | 3.6 GHz                                                         |
+| CPU cores     | 2                                                             | 4+                                                              |
+| GPU           | Integrated                                                    | Integrated                                                      |
+
+## Windows
+| Type          | Required                                                      | Recommended                                                     |
+|---------------|---------------------------------------------------------------|-----------------------------------------------------------------|
+| Wi-Fi         | any                                                           | wired                                                           |
+| Python        | [3.11](https://www.python.org/downloads/release/python-3110/) | [3.11.6](https://www.python.org/downloads/release/python-3116/) |
+| Storage space | 256mb                                                         | 256mb                                                           |
+| total RAM     | 4GB                                                           | 8GB                                                             |
+| program RAM   | 1GB                                                           | 4GB                                                             |
+| CPU speed     | 2.1 GHz                                                       | 3.6 GHz                                                         |
+| CPU cores     | 4                                                             | 6+                                                              |
+| GPU           | Integrated                                                    | Integrated                                                      |
+
 ### Download
 Install git and run `git clone https://github.com/MrStickyPiston/CGBNvote.git && cd CGBNvote` in the batch shell or click [here](https://github.com/MrStickyPiston/CGBNvote/archive/refs/heads/master.zip) to download as zip and unzip.
 ### Installation
