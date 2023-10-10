@@ -390,7 +390,7 @@ def vote_results():
     if lib.database.get_setting(con, "voting_active") == "1" and lib.database.get_setting(con, "live_results") == "0":
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
     else:
-        subprocess.check_call([sys.executable, "lib/plot.py"])
+        subprocess.check_call([sys.executable, "lib/plot.py", os.getcwd()])
 
     con.commit()
     return template("custom", {"content": results})
@@ -405,7 +405,6 @@ def serve_bottle(host, port):
 
 
 def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
-    print(f"Running server on {page_url}")
 
     if server_adapter == 'gunicorn':
         run(
@@ -433,7 +432,6 @@ def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
 def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key='ssl/server.key',
                 ssl_cert='ssl/server.crt'):
     sslcontext.load_default_certs()
-    print(f"Running server on {page_url}")
 
     if server_adapter == 'gunicorn':
         run(
