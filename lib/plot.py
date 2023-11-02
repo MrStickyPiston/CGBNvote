@@ -1,4 +1,5 @@
 import sys
+import hashlib
 
 import matplotlib.pyplot as plt
 
@@ -23,6 +24,18 @@ def plot_votes(con):
     counts = []
     results = cur.fetchall()
 
+    if not results:
+        return 148
+
+    results_hash = hashlib.sha512(repr(results).encode('utf-8')).hexdigest()
+
+    if results_hash == open('static/results-hash.sha512', 'r').read():
+        # No changes
+        return
+
+    with open('static/results-hash.sha512', 'w') as f:
+        f.write(results_hash)
+
     for result in results:
         votes.append(result[0])
         counts.append(result[1])
@@ -42,4 +55,4 @@ def plot_votes(con):
 
 if __name__ == "__main__":
     con = lib.database.connect("database.db")
-    plot_votes(con)
+    exit(plot_votes(con))
