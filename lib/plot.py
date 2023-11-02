@@ -34,7 +34,10 @@ def plot_votes(con):
     plt.ylabel('Aantal stemmen')
     plt.title('CGBNvote resultaten')
 
-    plt.savefig('static/results.webp')
+    plt.xticks(rotation=90)
+    plt.yticks(ticks=plt.yticks()[0], labels=plt.yticks()[0].astype(int))
+
+    plt.savefig('static/results.webp', bbox_inches="tight")
 
 
 if __name__ == "__main__":

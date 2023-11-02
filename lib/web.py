@@ -60,13 +60,13 @@ def error500(e):
 def forward_admin():
     redirect('/admin-login')
 
-
 @get('/vote')
 def forward_vote():
     redirect('/')
 
 
 @get('/vote-results')
+@get('/resultaten')
 def forward_results():
     redirect('/results')
 

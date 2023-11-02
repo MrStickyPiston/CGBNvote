@@ -9,10 +9,10 @@
   "ssl_cert": "None",
   "use_domain": False,
 
-  "url": bottle.request.forms["server_url"],
+  "url": server_url,
 
-  "mail": bottle.request.forms["mail"],
-  "mail_password": bottle.request.forms["mail_password"],
+  "mail": server_mail,
+  "mail_password": mail_password,
   "mail_domain": "cgbn.nl",
 
   "workers_per_core": 2,
