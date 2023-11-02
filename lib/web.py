@@ -177,7 +177,7 @@ def vote_admin_panel():
         session = lib.encryption.generate_session()
 
         lib.database.set_session(con, session, user)
-        response.set_cookie("SESSION", session, path='/', samesite=None, max_age=60 * 10)
+        response.set_cookie("SESSION", session, path='/', samesite='lax', max_age=60 * 10)
         con.close()
 
         if request.forms.get('closetab') == "1":
@@ -444,7 +444,6 @@ def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key=
             port=port,
             server=server_adapter,
             workers=workers,
-            reloader=1,
             keyfile=ssl_key,
             certfile=ssl_cert
         )

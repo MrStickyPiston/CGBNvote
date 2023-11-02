@@ -29,7 +29,7 @@ def plot_votes(con):
 
     results_hash = hashlib.sha512(repr(results).encode('utf-8')).hexdigest()
 
-    if results_hash == open('static/results-hash.sha512', 'r').read():
+    if results_hash == open('static/results-hash.sha512', 'w+').read():
         # No changes
         return
 
@@ -40,17 +40,25 @@ def plot_votes(con):
         votes.append(result[0])
         counts.append(result[1])
 
+    print(votes)
+    print(counts)
+
+    party_count_pairs = list(zip(votes, counts))
+    sorted_party_count_pairs = sorted(party_count_pairs, key=lambda x: x[1])
+
+    sorted_votes = [pair[0] for pair in sorted_party_count_pairs]
+    sorted_counts = [pair[1] for pair in sorted_party_count_pairs]
+
     con.commit()
 
     print("Plotting the results")
-    plt.bar(votes, counts, color="#1e78b6")
-    plt.ylabel('Aantal stemmen')
+    plt.barh(sorted_votes, sorted_counts, color="#1e78b6")
+    plt.xlabel('Aantal stemmen')
     plt.title('CGBNvote resultaten')
 
-    plt.xticks(rotation=90)
-    plt.yticks(ticks=plt.yticks()[0], labels=plt.yticks()[0].astype(int))
+    plt.gca().xaxis.set_major_locator(plt.MultipleLocator(base=1))
 
-    plt.savefig('static/results.webp', bbox_inches="tight")
+    plt.savefig('static/results.webp', bbox_inches="tight", )
 
 
 if __name__ == "__main__":
