@@ -70,6 +70,7 @@ def generate_database(admin_name, admin_password):
     password = admin_password
     validation = check_password(password)
     if not validation[0]:
+        print(validation[1])
         return False
 
     database.set_admins(con, [(admin_name, admin_password)])
