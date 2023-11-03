@@ -1,3 +1,4 @@
+import pathlib
 import sys
 import hashlib
 
@@ -29,19 +30,19 @@ def plot_votes(con):
 
     results_hash = hashlib.sha512(repr(results).encode('utf-8')).hexdigest()
 
-    if results_hash == open('static/results-hash.sha512', 'w+').read():
+    pathlib.Path.touch(pathlib.Path('static/results-hash.sha512'))
+
+    if results_hash == open('static/results-hash.sha512', 'r').read():
         # No changes
         return
 
     with open('static/results-hash.sha512', 'w') as f:
+        pass
         f.write(results_hash)
 
     for result in results:
         votes.append(result[0])
         counts.append(result[1])
-
-    print(votes)
-    print(counts)
 
     party_count_pairs = list(zip(votes, counts))
     sorted_party_count_pairs = sorted(party_count_pairs, key=lambda x: x[1])
