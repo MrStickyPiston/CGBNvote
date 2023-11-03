@@ -80,7 +80,7 @@ def static(filename):
                                                                "voting_active") == "1" and lib.database.get_setting(con,
                                                                                                                     "live_results") == "0":
         return "Sorry, maar je mag dit bestand nog niet bekijken."
-    return static_file(filename, root=os.getcwd() + "/static/")
+    return static_file(filename, root=os.getcwd() + "/static/", download=True)
 
 
 @route('/favicon.ico')
@@ -265,7 +265,7 @@ def reset_auth():
         except Exception:
             pass
         con.commit()
-        return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
+        return 'De wijzigingen zijn successvol verwerkt.'
 
     else:
         print(f"Failed login attempt at /admin-panel/reset_votes by {user}")
@@ -398,7 +398,7 @@ def vote_results():
                 results = "<p>Geen resultaten gevonden</p>"
 
     con.commit()
-    return template("custom", {"content": results})
+    return template("results", {"results": results})
 
 
 # SERVER FUNCTIONS

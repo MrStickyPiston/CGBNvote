@@ -62,7 +62,7 @@ def plot_votes(con):
 
     plt.gca().xaxis.set_major_locator(plt.MultipleLocator(base=tick_space))
 
-    plt.savefig('static/results.webp', bbox_inches="tight", )
+    plt.savefig('static/results.webp', bbox_inches="tight", dpi=300)
 
 
 if __name__ == "__main__":

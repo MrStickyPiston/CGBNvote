@@ -1,6 +1,7 @@
 /database.db
 /config.json
 /static/results.webp
+/static/results-hash.sha512
 /ssl/
 !/ssl/readme.md
 /.idea/
