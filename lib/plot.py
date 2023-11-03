@@ -1,3 +1,4 @@
+import math
 import pathlib
 import sys
 import hashlib
@@ -32,8 +33,8 @@ def plot_votes(con):
 
     pathlib.Path.touch(pathlib.Path('static/results-hash.sha512'))
 
+    # No changes
     if results_hash == open('static/results-hash.sha512', 'r').read():
-        # No changes
         return
 
     with open('static/results-hash.sha512', 'w') as f:
@@ -57,7 +58,9 @@ def plot_votes(con):
     plt.xlabel('Aantal stemmen')
     plt.title('CGBNvote resultaten')
 
-    plt.gca().xaxis.set_major_locator(plt.MultipleLocator(base=1))
+    tick_space = math.ceil(max(sorted_counts)/10)
+
+    plt.gca().xaxis.set_major_locator(plt.MultipleLocator(base=tick_space))
 
     plt.savefig('static/results.webp', bbox_inches="tight", )
 

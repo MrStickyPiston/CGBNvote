@@ -8,8 +8,9 @@ candidates = lib.database.get_candidates(con)
 
 cur = con.cursor()
 
-for i in candidates:
-	if random.randint(0, 2) > 1:
-		cur.execute("""INSERT INTO votes VALUES(?, ?)""", [i[1], time.time()])
+VOTES = 500
+
+for i in range(VOTES):
+	cur.execute("""INSERT INTO votes VALUES(?, ?)""", [random.choice(candidates)[1], time.time()])
 
 con.commit()
