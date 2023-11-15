@@ -1,11 +1,14 @@
+import json
+import os
+import smtplib
+import ssl
 import subprocess
-import sys
-
-from bottle import route, get, post, request, run, static_file, template, error, response, redirect
 from ast import literal_eval
-import smtplib, ssl, os, json
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+from bottle import request, run, static_file, template, error, response, redirect, Bottle
+
 import lib
 
 sslcontext = ssl.create_default_context()
@@ -27,6 +30,7 @@ try:
             disable_mail = True
 
         page_url = data["url"]
+        python_bin = data["python"]
 
         if not page_url.startswith('http://') and not page_url.startswith('https://'):
             if data['ssl_key'] != "None" and data['ssl_cert'] != "None":
@@ -43,6 +47,8 @@ try:
 except Exception:
     exit("Incorrect config file")
 
+app = Bottle()
+
 
 @error(404)
 def error404(e):
@@ -55,23 +61,24 @@ def error500(e):
 
 
 # Redirects
-@get('/admin')
-@get('/vote-admin')
+@app.get('/admin')
+@app.get('/vote-admin')
 def forward_admin():
     redirect('/admin-login')
 
-@get('/vote')
+
+@app.get('/vote')
 def forward_vote():
     redirect('/')
 
 
-@get('/vote-results')
-@get('/resultaten')
+@app.get('/vote-results')
+@app.get('/resultaten')
 def forward_results():
     redirect('/results')
 
 
-@route('/static/<filename>')
+@app.route('/static/<filename>')
 def static(filename):
     con = lib.database.connect("database.db")
     con.commit()
@@ -83,7 +90,7 @@ def static(filename):
     return static_file(filename, root=os.getcwd() + "/static/", download=True)
 
 
-@route('/favicon.ico')
+@app.route('/favicon.ico')
 def icon():
     return static_file("favicon.png", root=os.getcwd() + "/static")
 
@@ -124,7 +131,7 @@ def admin_panel_html(user):
     return template("admin_panel", payload)
 
 
-@get('/admin-panel')
+@app.get('/admin-panel')
 def admin_panel():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
@@ -135,7 +142,7 @@ def admin_panel():
         redirect('/admin-login')
 
 
-@get('/admin-login')
+@app.get('/admin-login')
 def vote_admin_login():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
@@ -150,7 +157,7 @@ def vote_admin_login():
     return template("admin_login", {"script": "", "closetab": request.params.get('close')})
 
 
-@post('/admin-login')
+@app.post('/admin-login')
 def vote_admin_panel():
     con = lib.database.connect("database.db")
     user = lib.database.verify_session(con, request.get_cookie("SESSION"))
@@ -194,7 +201,7 @@ def vote_admin_panel():
             "closetab": 1})
 
 
-@post('/admin-panel/process')
+@app.post('/admin-panel/process')
 def process_changes():
     username = request.forms.get('username')
     con = lib.database.connect("database.db")
@@ -219,7 +226,7 @@ def process_changes():
             "script": "alert('Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'); history.back()"})
 
 
-@post('/admin-panel/reset_auth')
+@app.post('/admin-panel/reset_auth')
 def reset_auth():
     user = request.query["user"]
     con = lib.database.connect("database.db")
@@ -237,7 +244,7 @@ def reset_auth():
         return 'Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'
 
 
-@post('/admin-panel/check_auth')
+@app.post('/admin-panel/check_auth')
 def check_auth():
     user = request.query["user"]
     con = lib.database.connect("database.db")
@@ -252,8 +259,8 @@ def check_auth():
         return
 
 
-@post('/admin-panel/reset_votes')
-def reset_auth():
+@app.post('/admin-panel/reset_votes')
+def reset_votes():
     user = request.query["user"]
     con = lib.database.connect("database.db")
 
@@ -265,7 +272,7 @@ def reset_auth():
         except Exception:
             pass
         con.commit()
-        return 'De wijzigingen zijn successvol verwerkt.'
+        return 'De stemmen zijn uit de database verwijdert. Restart de server voor resultaten op /vote-results'
 
     else:
         print(f"Failed login attempt at /admin-panel/reset_votes by {user}")
@@ -273,7 +280,7 @@ def reset_auth():
         return 'Uw sessie id klopt niet. Vernieuw uw sessie bovenaan het admin-panel.'
 
 
-@get('/admin-panel/log_out')
+@app.get('/admin-panel/log_out')
 def log_out():
     con = lib.database.connect("database.db")
     lib.database.logout_session(con, request.get_cookie("SESSION"))
@@ -283,7 +290,7 @@ def log_out():
     redirect("/admin-login")
 
 
-@get('/')
+@app.get('/')
 def collect_vote():
     def candidates_html():
         start = '<select name="vote" id="vote" required>\n<option value="" selected disabled hidden> Selecteer waarop je wil stemmen </option>'
@@ -313,7 +320,7 @@ def collect_vote():
     return template("collect_votes", payload)
 
 
-@post('/')
+@app.post('/')
 def process_vote():
     con = lib.database.connect("database.db")
     if lib.database.get_setting(con, "voting_active") == "0":
@@ -355,7 +362,7 @@ def process_vote():
         return template("custom", {"content": error})
 
 
-@post('/send_code')
+@app.post('/send_code')
 def send_code():
     if disable_mail:
         return "De mailservers zijn momenteel niet beschikbaar. Vraag aan de beheerder of dit een fout is."
@@ -382,7 +389,7 @@ def send_code():
         return e
 
 
-@get('/results')
+@app.get('/results')
 def vote_results():
     con = lib.database.connect("database.db")
 
@@ -391,7 +398,7 @@ def vote_results():
         results = "<p>Sorry, maar de uitslagen zijn nu nog niet beschikbaar.</p>"
     else:
         try:
-            subprocess.check_call([sys.executable, "lib/plot.py", os.getcwd()])
+            subprocess.check_call([python_bin, "lib/plot.py", os.getcwd()])
         except subprocess.CalledProcessError as e:
             print(e.returncode)
             if e.returncode == 148:
@@ -410,7 +417,6 @@ def serve_bottle(host, port):
 
 
 def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
-
     if server_adapter == 'gunicorn':
         run(
             host=host,

@@ -1,4 +1,4 @@
-import sqlite3, secrets, string, time, json
+import sqlite3, secrets, string, time
 
 import lib.encryption
 

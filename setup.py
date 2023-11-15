@@ -9,9 +9,9 @@ version = sys.version_info.major * 1000000 + sys.version_info.minor * 1000 + sys
 
 if not sys.maxsize > 2 ** 32:
     exit("Invalid python interpreter: use 64 bit python instead.")
-elif version < 3011000:
+elif version < 3010000:
     exit(f"Invalid python version: {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-         "\nCGBNvote requires at least python 3.11")
+         "\nCGBNvote requires at least python 3.10")
 
 
 def install_packages():
@@ -23,7 +23,7 @@ def install_packages():
         subprocess.check_call([sys.executable, 'setup/get-pip.py'])
         print("installed pip")
 
-    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn', 'waitress'])
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'bottle', 'matplotlib', 'gunicorn', 'waitress', '-U'])
 
 
 def generate_database(admin_name, admin_password):
@@ -81,13 +81,15 @@ def generate_database(admin_name, admin_password):
 
 
 def generate_config(server_url, server_mail, mail_password):
+    python_bin = sys.executable
     config = eval(open("setup/templates/project_config.pyjson").read(),
                   {
                       '__builtins__': None,
                       'secrets': secrets,
                       'server_url': server_url,
                       'server_mail': server_mail,
-                      'mail_password': mail_password
+                      'mail_password': mail_password,
+                      'python_bin': python_bin
                   })
     json_config = json.dumps(config, indent=4)
 
