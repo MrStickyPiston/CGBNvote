@@ -418,7 +418,7 @@ def serve_bottle(host, port):
 
 def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
     if server_adapter == 'gunicorn':
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter,
@@ -426,14 +426,14 @@ def serve_http(host, port, server_adapter, workers=2 * os.cpu_count()):
             reloader=1
         )
     elif server_adapter == 'waitress':
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter,
             threads=workers
         )
     else:
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter
@@ -445,7 +445,7 @@ def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key=
     sslcontext.load_default_certs()
 
     if server_adapter == 'gunicorn':
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter,
@@ -454,7 +454,7 @@ def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key=
             certfile=ssl_cert
         )
     elif server_adapter == 'waitress':
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter,
@@ -463,7 +463,7 @@ def serve_https(host, port, server_adapter, workers=2 * os.cpu_count(), ssl_key=
             certfile=ssl_cert
         )
     else:
-        run(
+        app.run(
             host=host,
             port=port,
             server=server_adapter,
