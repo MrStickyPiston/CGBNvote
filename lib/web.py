@@ -373,6 +373,9 @@ def send_code():
             con.close()
             return f"De verkiezingen zijn nu helaas niet actief. Kijk op {page_url}/vote_results voor de resultaten."
 
+        if len(request.query["userid"]) > 6:
+            return "Incorrect leerlingnummer"
+
         email = request.query["userid"] + "@" + mail_domain
         code = lib.database.generate_code(con, request.query["userid"])
 
