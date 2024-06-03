@@ -386,7 +386,7 @@ def send_code():
         else:
             send_mail(code, email)
             print(f"Successfully send a email to {email}")
-            return f"De authenticatiecode is succesvol verzonden naar {email}."
+            return f"De authenticatiecode is succesvol verzonden naar {email}. Het kan enkele minuten duren voordat de mail is aangekomen."
     except Exception as e:
         print(f"Failed to send email to {email}")
         return e
