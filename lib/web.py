@@ -87,6 +87,9 @@ def static(filename):
                                                                "voting_active") == "1" and lib.database.get_setting(con,
                                                                                                                     "live_results") == "0":
         return "Sorry, maar je mag dit bestand nog niet bekijken."
+
+    if filename != "favicon.ico":
+        return "Sorry, maar je mag dit bestand niet bekijken."
     return static_file(filename, root=os.getcwd() + "/static/", download=True)
 
 
