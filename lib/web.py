@@ -408,7 +408,7 @@ def vote_results():
                 results = "<p>Geen resultaten gevonden</p>"
 
     con.commit()
-    return template("results", {"results": results})
+    return template("results", {"results": results, "vote_name": lib.database.get_setting(con, "vote_name")})
 
 
 # SERVER FUNCTIONS

@@ -9,6 +9,8 @@
   </header>
   <section class="flex-sect" id="ih3qc">
     <div class="container-width">
+    <div class="flex-title" id="iwjse">{{vote_name}}
+      </div>
       <div class="flex-desc" id="ijdug">{{!results}}
       </div>
     </div>
